@@ -1,0 +1,21 @@
+# Local HAPI FHIR R4 server for development. See server/README.md.
+services:
+  hapi:
+    # Matches the hosted demo server (HAPI FHIR 8.8.0).
+    image: hapiproject/hapi:v8.8.0-1
+    # The image runs as uid 65532, but a fresh named volume is root-owned. Local dev only.
+    user: root
+    ports:
+      # Host port; override with HAPI_PORT=... if 8080 is taken (then update ServerConfig URLs too).
+      - "${HAPI_PORT:-8080}:8080"
+    environment:
+      # The image defaults to an in-memory H2 database; keep it on the volume instead.
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/h2
+      # R4 and CORS for any origin are already the image defaults; pinned here so the web target
+      # keeps working if those defaults change.
+      SPRING_APPLICATION_JSON: '{"hapi":{"fhir":{"fhir_version":"R4","cors":{"allow_Credentials":true,"allowed_origin":["*"]}}}}'
+    volumes:
+      - hapi-data:/app/data
+
+volumes:
+  hapi-data:
