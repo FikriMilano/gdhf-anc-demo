@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -72,6 +73,9 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
     val patients by produceState<List<PatientSummary>?>(null, query, highBpOnly, reloads) {
         value = repository.patients(query, highBpOnly)
     }
+    var syncing by remember { mutableStateOf(false) }
+    var syncFailed by remember { mutableStateOf(false) }
+    val pending by produceState<Int?>(null, reloads) { value = repository.pendingSyncCount() }
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
@@ -81,6 +85,26 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
             modifier = Modifier.combinedClickable(onClick = {}, onLongClick = { confirmReset = true }),
         )
         Pill("Offline · saved on this device")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                syncStatus(syncing, syncFailed, pending),
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (syncFailed) HighBpRed else Color.Unspecified,
+                modifier = Modifier.weight(1f),
+            )
+            OutlinedButton(
+                onClick = {
+                    syncing = true
+                    scope.launch {
+                        syncFailed = !repository.sync()
+                        syncing = false
+                        reloads++
+                    }
+                },
+                enabled = !syncing,
+                modifier = Modifier.height(48.dp),
+            ) { Text("Sync", style = MaterialTheme.typography.titleMedium) }
+        }
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
@@ -99,7 +123,9 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
             if (patients != null && list.isEmpty()) {
                 item { Text("No patients found", style = MaterialTheme.typography.bodyLarge) }
             }
-            items(list, key = { it.id }) { PatientRow(it, onClick = { onOpenPatient(it.id) }) }
+            // No item keys: with keys, Compose keeps the old first row in view, so a patient that
+            // sync or search puts above it would appear off-screen.
+            items(list) { PatientRow(it, onClick = { onOpenPatient(it.id) }) }
         }
         Button(onClick = onRegister, modifier = Modifier.fillMaxWidth().height(64.dp)) {
             Text("+ Register patient", style = MaterialTheme.typography.titleLarge)
@@ -122,6 +148,21 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
             },
             dismissButton = { TextButton(onClick = { confirmReset = false }) { Text("Cancel") } },
         )
+    }
+}
+
+private fun syncStatus(syncing: Boolean, failed: Boolean, pending: Int?): String {
+    val waiting =
+        when (pending) {
+            null -> ""
+            0 -> "All synced"
+            1 -> "1 record waiting to sync"
+            else -> "$pending records waiting to sync"
+        }
+    return when {
+        syncing -> "Syncing…"
+        failed -> if (pending == 0) "Sync failed" else "Sync failed · $waiting"
+        else -> waiting
     }
 }
 

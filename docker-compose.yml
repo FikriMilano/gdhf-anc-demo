@@ -13,7 +13,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/h2
       # R4 and CORS for any origin are already the image defaults; pinned here so the web target
       # keeps working if those defaults change.
-      SPRING_APPLICATION_JSON: '{"hapi":{"fhir":{"fhir_version":"R4","cors":{"allow_Credentials":true,"allowed_origin":["*"]}}}}'
+      # reuse_cached_search_results_millis=0: by default HAPI answers a repeated search within 60 s
+      # from its cache, so a second Sync right after the first misses resources created in between.
+      SPRING_APPLICATION_JSON: '{"hapi":{"fhir":{"fhir_version":"R4","reuse_cached_search_results_millis":0,"cors":{"allow_Credentials":true,"allowed_origin":["*"]}}}}'
     volumes:
       - hapi-data:/app/data
 

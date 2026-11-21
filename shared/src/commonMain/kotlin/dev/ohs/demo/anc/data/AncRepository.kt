@@ -11,12 +11,24 @@ import dev.ohs.fhir.engine.search.StringClientParam
 import dev.ohs.fhir.engine.search.StringFilterModifier
 import dev.ohs.fhir.engine.search.search
 import dev.ohs.fhir.engine.search.count
+import dev.ohs.fhir.engine.sync.AcceptLocalConflictResolver
 import dev.ohs.fhir.engine.sync.AcceptRemoteConflictResolver
+import dev.ohs.fhir.engine.sync.FhirSyncTask
+import dev.ohs.fhir.engine.sync.SyncJobStatus
+import dev.ohs.fhir.engine.sync.download.ResourceParamsBasedDownloadWorkManager
+import dev.ohs.fhir.engine.sync.runSync
+import dev.ohs.fhir.engine.sync.upload.HttpCreateMethod
+import dev.ohs.fhir.engine.sync.upload.HttpUpdateMethod
+import dev.ohs.fhir.engine.sync.upload.UploadStrategy
 import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
+import dev.ohs.fhir.model.r4.terminologies.ResourceType
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -87,4 +99,62 @@ class AncRepository(private val engine: FhirEngine) {
     }
 
     suspend fun patient(id: String): PatientSummary? = patients().firstOrNull { it.id == id }
+
+    /**
+     * Number of Patients and Observations created on this device and not yet uploaded. The Engine
+     * has no "count all local changes" call, so this asks once per resource.
+     */
+    // ponytail: one query per resource; fine for a demo-sized database.
+    suspend fun pendingSyncCount(): Int {
+        val patients = engine.search<Patient> {}.map { it.resource }
+        val observations = engine.search<Observation> {}.map { it.resource }
+        return patients.count { hasLocalChanges(ResourceType.Patient, it.id) } +
+            observations.count { hasLocalChanges(ResourceType.Observation, it.id) }
+    }
+
+    private suspend fun hasLocalChanges(type: ResourceType, id: String?) =
+        id != null && engine.getLocalChanges(type, id).isNotEmpty()
+
+    /**
+     * Downloads Patients and Observations from the server, then uploads local changes. Runs in the
+     * foreground on every platform (the Engine's FhirSyncTask.runSync); returns false if it fails,
+     * e.g. when the server is unreachable.
+     */
+    suspend fun sync(): Boolean =
+        try {
+            withContext(Dispatchers.Default) { AncSyncTask(engine).runSync(taskName = null) {} } is SyncJobStatus.Succeeded
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            println("Sync failed: $e")
+            false
+        }
+}
+
+private class AncSyncTask(private val engine: FhirEngine) : FhirSyncTask {
+    override fun getFhirEngine() = engine
+
+    // ponytail: downloads every Patient and Observation each time; filter (e.g. by a demo tag) and
+    // keep _lastUpdated timestamps once the server holds more than this demo's data.
+    override fun getDownloadWorkManager() =
+        ResourceParamsBasedDownloadWorkManager(
+            mapOf(ResourceType.Patient to emptyMap(), ResourceType.Observation to emptyMap()),
+            NoTimestamps,
+        )
+
+    override fun getConflictResolver() = AcceptLocalConflictResolver
+
+    override fun getUploadStrategy() =
+        UploadStrategy.forBundleRequest(
+            methodForCreate = HttpCreateMethod.PUT,
+            methodForUpdate = HttpUpdateMethod.PATCH,
+            squash = true,
+            bundleSize = 500,
+        )
+}
+
+private object NoTimestamps : ResourceParamsBasedDownloadWorkManager.TimestampContext {
+    override suspend fun saveLastUpdatedTimestamp(resourceType: ResourceType, timestamp: String?) {}
+
+    override suspend fun getLasUpdateTimestamp(resourceType: ResourceType): String? = null
 }
