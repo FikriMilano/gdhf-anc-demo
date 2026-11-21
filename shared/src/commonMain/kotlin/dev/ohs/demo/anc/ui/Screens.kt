@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -122,6 +123,11 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
             selected = highBpOnly,
             onClick = { highBpOnly = !highBpOnly },
             label = { Text("High blood pressure", style = MaterialTheme.typography.bodyLarge) },
+            // The default selected colour (lavender) is too close to the background to read as "on".
+            colors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+            ),
             modifier = Modifier.height(48.dp),
         )
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -148,6 +154,7 @@ fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenP
                     confirmReset = false
                     scope.launch {
                         repository.resetDemoData()
+                        syncFailed = false
                         reloads++
                     }
                 }) { Text("Reset") }
