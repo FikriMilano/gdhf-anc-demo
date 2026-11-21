@@ -1,0 +1,64 @@
+package dev.ohs.demo.anc
+
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.runDesktopComposeUiTest
+import dev.ohs.fhir.engine.FhirEngineConfiguration
+import dev.ohs.fhir.engine.FhirEngineProvider
+import kotlin.test.Test
+
+/**
+ * The whole app on the desktop (JVM) target, with an in-memory Engine: seed list, registration with
+ * live GA/EDD and BP validation, save, and the new patient in the list. Uses the same input as the
+ * Android and web checks.
+ */
+@OptIn(ExperimentalTestApi::class)
+class DesktopAppTest {
+
+    @Test
+    fun `register a patient end to end`() = runDesktopComposeUiTest(width = 600, height = 3000) {
+        if (FhirEngineProvider.isNotInitialized()) FhirEngineProvider.init(FhirEngineConfiguration(testMode = true))
+        setContent { App() }
+        waitForText("Ngozi Adeyemi")
+
+        onNodeWithText("+ Register patient").performClick()
+        waitUntil(timeoutMillis = 30_000) { onAllNodes(hasSetTextAction()).fetchSemanticsNodes().size >= 6 }
+        // Editable fields in form order: given, family, birth date, LMP, systolic, diastolic.
+        field(0).performTextInput("Amara")
+        field(1).performTextInput("Okafor")
+        field(2).performTextInput("05201997")
+        field(3).performTextInput("07152026")
+
+        // Live calculation. Fixed expectation for LMP 15 Jul 2026 only holds on 21 Nov 2026, so
+        // check the EDD (date-independent) and that some GA appears.
+        waitForText("04/21/2027")
+        waitUntil(timeoutMillis = 10_000) {
+            onAllNodes(hasText(" w ", substring = true) and hasText(" d", substring = true)).fetchSemanticsNodes().isNotEmpty()
+        }
+
+        onNodeWithText("No").performClick()
+        field(4).performTextInput("400")
+        waitForText("Maximum value allowed is:300", substring = true)
+        field(4).performTextReplacement("148")
+        field(5).performTextInput("96")
+        Thread.sleep(800) // text input is debounced (500 ms) before the answer is recorded
+        onNodeWithText("Save").performClick()
+
+        waitForText("1 patient, 4 observations")
+        onNodeWithText("Back to patient list").performClick()
+        waitForText("Amara Okafor")
+    }
+
+    private fun ComposeUiTest.field(index: Int) = onAllNodes(hasSetTextAction())[index]
+
+    private fun ComposeUiTest.waitForText(text: String, substring: Boolean = false) =
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithText(text, substring = substring).fetchSemanticsNodes().isNotEmpty() }
+}
+

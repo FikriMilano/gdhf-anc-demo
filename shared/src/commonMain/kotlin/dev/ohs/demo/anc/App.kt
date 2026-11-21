@@ -69,7 +69,7 @@ sealed interface Screen {
 fun App(platformContext: Any = Unit) {
     MaterialTheme(colorScheme = ancColors) {
         Column(Modifier.fillMaxSize().background(Background).safeDrawingPadding()) {
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).fillMaxWidth()) {
                 val repository by produceState<AncRepository?>(null) {
                     value = withContext(Dispatchers.Default) {
                         AncRepository(fhirEngine(platformContext)).also { it.seedIfEmpty() }

@@ -280,7 +280,7 @@ fun PatientDetailScreen(repository: AncRepository, patientId: String, onBack: ()
 @Composable
 private fun ScreenHeader(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = onBack, modifier = Modifier.height(48.dp)) { Text("← Back", style = MaterialTheme.typography.titleMedium) }
+        TextButton(onClick = onBack, modifier = Modifier.height(48.dp)) { Text("Back", style = MaterialTheme.typography.titleMedium) }
         Spacer(Modifier.padding(4.dp))
         Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     }

@@ -13,7 +13,7 @@
   integrity sha512-yH4M/SHN98NibniIwTVk6rwTJjy7n39l7zwWY3u+qsfZBGTi4lC1uEl2NDvIlkzsFtfCBvHBJJFJ1iuU3UzzEQ==
 
 "sqlite-wasm-worker@file:../../shared/src/wasmJsMain/npm/sqlite-wasm-worker":
-  version "0.0.0"
+  version "0.0.1"
   dependencies:
     "@sqlite.org/sqlite-wasm" "^3.50.1-build1"
 

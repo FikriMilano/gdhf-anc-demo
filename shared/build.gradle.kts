@@ -57,6 +57,7 @@ kotlin {
     jvmTest.dependencies {
       implementation(libs.ohs.fhir.path.r4)
       implementation(libs.kotlinx.coroutines.test)
+      implementation(libs.compose.ui.test)
     }
     jvmMain.dependencies {
       implementation(compose.desktop.currentOs)
