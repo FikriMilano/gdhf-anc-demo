@@ -39,7 +39,9 @@ class RegistrationQuestionnaireTest {
         .jsonObject
     // Like Data Capture: evaluate root variables in order, each seeing the ones before it.
     val variables = mutableMapOf<String, Any?>("today" to date(today), "lmp" to date(lmp))
-    questionnaire.array("extension").map { it.jsonObject.getValue("valueExpression").jsonObject }
+    questionnaire.array("extension").map { it.jsonObject }
+      .filter { it.string("url") == "http://hl7.org/fhir/StructureDefinition/variable" }
+      .map { it.getValue("valueExpression").jsonObject }
       .forEach { variable ->
         val name = variable.string("name")
         if (name !in variables) {
@@ -49,7 +51,7 @@ class RegistrationQuestionnaireTest {
 
     fun calculated(linkId: String) =
       questionnaire.array("item").map { it.jsonObject }.single { it.string("linkId") == linkId }
-        .array("extension").single().jsonObject.getValue("valueExpression").jsonObject.string("expression")
+        .array("extension").map { it.jsonObject }.single { it.string("url").endsWith("calculatedExpression") }.getValue("valueExpression").jsonObject.string("expression")
         .let { engine.evaluateExpression(it, null, variables).single().toString() }
 
     assertEquals(ga, calculated("gestational-age"))

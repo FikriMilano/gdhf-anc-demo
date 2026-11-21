@@ -9,11 +9,12 @@ compose-multiplatform = "1.11.1"
 compose-material3 = "1.9.0"
 kotlin = "2.3.21"
 kotlinx-coroutines = "1.11.0"
-kotlinx-serialization = "1.9.0"
+kotlinx-serialization = "1.11.0"
+kotlinx-datetime = "0.8.0"
 logback = "1.6.2"
 # OHS FHIR Foundations. fhir-model-r4 is pinned to rc03, the version the other libraries are built against.
 ohs-fhir-data-capture = "2.0.0-alpha05-local.1"
-ohs-fhir-engine = "2.0.0-alpha04"
+ohs-fhir-engine = "2.0.0-alpha05"
 ohs-fhir-model-r4 = "1.0.0-rc03"
 ohs-fhir-path-r4 = "1.0.0-beta06"
 ohs-fhir-workflow = "2.0.0-alpha01"
@@ -30,6 +31,7 @@ androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycl
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ohs-fhir-data-capture = { module = "dev.ohs.fhir:fhir-data-capture", version.ref = "ohs-fhir-data-capture" }

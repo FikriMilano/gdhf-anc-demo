@@ -48,13 +48,14 @@ kotlin {
       implementation(libs.ohs.fhir.data.capture)
       implementation(libs.ohs.fhir.engine)
       implementation(libs.ohs.fhir.workflow)
+      implementation(libs.kotlinx.datetime)
+      implementation(libs.kotlinx.serialization.json)
     }
     commonTest.dependencies { implementation(libs.kotlin.test) }
     // Compose resources load only on JVM in unit tests, so tests that read the FHIR assets live here.
     jvmTest.dependencies {
       implementation(libs.ohs.fhir.path.r4)
       implementation(libs.kotlinx.coroutines.test)
-      implementation(libs.kotlinx.serialization.json)
     }
     jvmMain.dependencies {
       implementation(compose.desktop.currentOs)
