@@ -1,0 +1,256 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../fhir-data-capture/2.0.0-alpha05-local.1/fhir-data-capture-2.0.0-alpha05-local.1.module",
+    "group": "dev.ohs.fhir",
+    "module": "fhir-data-capture",
+    "version": "2.0.0-alpha05-local.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.5"
+    }
+  },
+  "variants": [
+    {
+      "name": "androidApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture.aar",
+          "url": "fhir-data-capture-android-2.0.0-alpha05-local.1.aar",
+          "size": 1165046,
+          "sha512": "b684a005316302943624eef9d712189f5cea2d7247bcd7217185f0086c6a4767142fff14e27dcfa74e6abc07422373b05e80210315bcd28e56f8db1fe16c2f69",
+          "sha256": "eeceaaf54489709ece66488d5bee18f3e8bdb9227ac169de545cca1e95edfd85",
+          "sha1": "cb300c1294a9f7575987072a3b9b647cf98c3fb5",
+          "md5": "636279e43ebbc418336968582c21ceb6"
+        }
+      ]
+    },
+    {
+      "name": "androidRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "permissions-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-camera",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-compose",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "io.github.ismai117",
+          "module": "KScan",
+          "version": {
+            "requires": "0.8.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-resources",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-ui-tooling-preview",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-dialogs-compose",
+          "version": {
+            "requires": "0.12.0"
+          }
+        },
+        {
+          "group": "co.touchlab",
+          "module": "kermit",
+          "version": {
+            "requires": "2.0.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigation",
+          "module": "navigation-compose",
+          "version": {
+            "requires": "2.9.1"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-model-r4",
+          "version": {
+            "requires": "1.0.0-rc03"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-path-r4",
+          "version": {
+            "requires": "1.0.0-beta06"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture.aar",
+          "url": "fhir-data-capture-android-2.0.0-alpha05-local.1.aar",
+          "size": 1165046,
+          "sha512": "b684a005316302943624eef9d712189f5cea2d7247bcd7217185f0086c6a4767142fff14e27dcfa74e6abc07422373b05e80210315bcd28e56f8db1fe16c2f69",
+          "sha256": "eeceaaf54489709ece66488d5bee18f3e8bdb9227ac169de545cca1e95edfd85",
+          "sha1": "cb300c1294a9f7575987072a3b9b647cf98c3fb5",
+          "md5": "636279e43ebbc418336968582c21ceb6"
+        }
+      ]
+    },
+    {
+      "name": "androidSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "datacapture-android-sources.jar",
+          "url": "fhir-data-capture-android-2.0.0-alpha05-local.1-sources.jar",
+          "size": 216896,
+          "sha512": "5efaf3daf0869d9059899feff2d0671fd65b3b1404cf7052d8e36e46950024ec63ae015d486155f8b5e4ec3d9a57f7967be47fca5cc1badb39082eb1ce6cd6a6",
+          "sha256": "6ff6c9c630ced43e605c64afb89cf18442d736cdf7873154c081aa1fcc4d611b",
+          "sha1": "1497545d8a340bdcfba647aef21674b361065ff2",
+          "md5": "460714796aca3056b979ffc115b3fd5e"
+        }
+      ]
+    }
+  ]
+}
