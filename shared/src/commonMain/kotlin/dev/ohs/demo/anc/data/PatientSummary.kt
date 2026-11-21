@@ -26,6 +26,7 @@ data class BloodPressure(val systolic: Int, val diastolic: Int) {
 
 /** What the list and detail screens show for one patient. */
 data class PatientSummary(
+    val patient: Patient,
     val id: String,
     val name: String,
     val age: Int?,
@@ -48,6 +49,7 @@ fun summarize(patient: Patient, observations: List<Observation>, today: LocalDat
     val latestFirst = observations.sortedByDescending { it.effectiveDate() }
     fun latest(code: String) = latestFirst.firstOrNull { it.loinc() == code }
     return PatientSummary(
+        patient = patient,
         id = patient.id!!,
         name = patient.name.firstOrNull()?.let { name ->
             (name.given.mapNotNull { it.value } + listOfNotNull(name.family?.value)).joinToString(" ")

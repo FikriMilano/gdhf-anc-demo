@@ -1,0 +1,65 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "anc-high-blood-pressure",
+        "url": "http://example.org/gdhf-anc-demo/PlanDefinition/anc-high-blood-pressure",
+        "version": "0.1.0",
+        "name": "AncHighBloodPressure",
+        "title": "High blood pressure in pregnancy",
+        "status": "draft",
+        "description": "Demo only, not clinical guidance. Follow-up tasks when the latest blood pressure is 140/90 mmHg or higher. Pass the latest blood pressure panel as %bp.",
+        "action": [
+          {
+            "id": "high-blood-pressure",
+            "title": "High blood pressure follow-up",
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/fhirpath",
+                  "expression": "%bp.component.where(code.coding.code = '8480-6').value.value >= 140 or %bp.component.where(code.coding.code = '8462-4').value.value >= 90"
+                }
+              }
+            ],
+            "action": [
+              {
+                "id": "repeat-blood-pressure",
+                "definitionCanonical": "http://example.org/gdhf-anc-demo/ActivityDefinition/repeat-blood-pressure"
+              },
+              {
+                "id": "refer-for-assessment",
+                "definitionCanonical": "http://example.org/gdhf-anc-demo/ActivityDefinition/refer-for-assessment"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "repeat-blood-pressure",
+        "url": "http://example.org/gdhf-anc-demo/ActivityDefinition/repeat-blood-pressure",
+        "status": "draft",
+        "title": "Repeat blood pressure",
+        "description": "Repeat the blood pressure after 15 minutes of rest",
+        "kind": "Task"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "refer-for-assessment",
+        "url": "http://example.org/gdhf-anc-demo/ActivityDefinition/refer-for-assessment",
+        "status": "draft",
+        "title": "Refer for assessment",
+        "description": "Refer to a doctor today to check for pre-eclampsia",
+        "kind": "Task"
+      }
+    }
+  ]
+}

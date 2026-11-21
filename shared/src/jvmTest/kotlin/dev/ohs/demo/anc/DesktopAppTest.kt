@@ -52,6 +52,8 @@ class DesktopAppTest {
         onNodeWithText("Save").performClick()
 
         waitForText("1 patient, 4 observations")
+        // 148/96 is high: fhir-workflow's care plan proposes the follow-ups.
+        waitForText("• Refer to a doctor today to check for pre-eclampsia")
         onNodeWithText("Back to patient list").performClick()
         waitForText("Amara Okafor")
     }
