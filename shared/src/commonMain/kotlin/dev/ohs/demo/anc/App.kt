@@ -1,47 +1,52 @@
 package dev.ohs.demo.anc
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-
 import dev.ohs.demo.anc.resources.Res
-import dev.ohs.demo.anc.resources.compose_multiplatform
+import dev.ohs.fhir.datacapture.Questionnaire
+import dev.ohs.fhir.datacapture.QuestionnaireConfig
+import kotlinx.coroutines.launch
 
 @Composable
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
-        }
+        Box(Modifier.safeContentPadding().fillMaxSize()) { RegistrationScreen() }
+    }
+}
+
+/** Screen 2: the registration Questionnaire, rendered by Data Capture. */
+@Composable
+fun RegistrationScreen() {
+    val questionnaireJson by produceState<String?>(null) {
+        value = Res.readBytes("files/registration-questionnaire.json").decodeToString()
+    }
+    var status by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+
+    status?.let { Text(it) }
+    questionnaireJson?.let { json ->
+        Questionnaire(
+            questionnaireJson = json,
+            config = QuestionnaireConfig(
+                showCancelButton = false,
+                submitButtonText = "Save",
+                showSubmitAnywayWhenValidationFails = false,
+            ),
+            // getResponse() throws CancellationException when validation fails; Data Capture then
+            // shows its own error dialog.
+            onSubmit = { getResponse -> scope.launch { status = "Valid: ${getResponse().item.size} items" } },
+            onCancel = {},
+        )
     }
 }

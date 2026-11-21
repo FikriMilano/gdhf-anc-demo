@@ -1,0 +1,255 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "anc-registration",
+  "url": "http://ohs.dev/demo/anc/Questionnaire/anc-registration",
+  "status": "active",
+  "title": "Register patient",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/variable",
+      "valueExpression": {
+        "name": "lmp",
+        "language": "text/fhirpath",
+        "expression": "%resource.repeat(item).where(linkId='lmp').answer.value"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/variable",
+      "valueExpression": {
+        "name": "today",
+        "language": "text/fhirpath",
+        "expression": "today()"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/variable",
+      "valueExpression": {
+        "name": "todayDayNumber",
+        "language": "text/fhirpath",
+        "description": "Julian Day Number of %today. kotlin-fhirpath 1.0.0-beta06 has no duration()/difference() and cannot subtract dates, so GA uses day numbers. Integer division is written (a / b).truncate() because 'div' and 'mod' throw for some operands in beta06.",
+        "expression": "%today.select(dayOf() + ((153 * (monthOf() + 12 * ((14 - monthOf()) / 12).truncate() - 3) + 2) / 5).truncate() + 365 * (yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) + ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 4).truncate() - ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 100).truncate() + ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 400).truncate())"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/variable",
+      "valueExpression": {
+        "name": "lmpDayNumber",
+        "language": "text/fhirpath",
+        "description": "Day number (Julian Day Number) of %lmp; same formula as todayDayNumber.",
+        "expression": "%lmp.select(dayOf() + ((153 * (monthOf() + 12 * ((14 - monthOf()) / 12).truncate() - 3) + 2) / 5).truncate() + 365 * (yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) + ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 4).truncate() - ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 100).truncate() + ((yearOf() + 4800 - ((14 - monthOf()) / 12).truncate()) / 400).truncate())"
+      }
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/variable",
+      "valueExpression": {
+        "name": "gaDays",
+        "language": "text/fhirpath",
+        "expression": "%todayDayNumber - %lmpDayNumber"
+      }
+    }
+  ],
+  "item": [
+    {
+      "linkId": "given-name",
+      "text": "Given name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "family-name",
+      "text": "Family name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "birth-date",
+      "text": "Date of birth",
+      "type": "date",
+      "required": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "birth-date-past"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='birth-date').answer.value.all($this < today())"
+            },
+            {
+              "url": "human",
+              "valueString": "Date of birth must be in the past"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "lmp",
+      "text": "First day of last menstrual period",
+      "type": "date",
+      "required": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "lmp-range"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='lmp').answer.value.all($this <= today() and $this >= today() - 300 days)"
+            },
+            {
+              "url": "human",
+              "valueString": "LMP must be within the last 300 days"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "linkId": "gestational-age",
+      "text": "Gestational age",
+      "type": "string",
+      "readOnly": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "%gaDays.select(($this / 7).truncate().toString() + ' w ' + ($this - 7 * ($this / 7).truncate()).toString() + ' d')"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "edd",
+      "text": "Estimated due date",
+      "type": "date",
+      "readOnly": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-calculatedExpression",
+          "valueExpression": {
+            "language": "text/fhirpath",
+            "expression": "%lmp + 280 days"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "previous-pregnancies",
+      "text": "Previous pregnancies?",
+      "type": "boolean"
+    },
+    {
+      "linkId": "pregnancy-count",
+      "text": "Number of previous pregnancies",
+      "type": "integer",
+      "enableWhen": [
+        {
+          "question": "previous-pregnancies",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 20
+        }
+      ]
+    },
+    {
+      "linkId": "live-births",
+      "text": "Number of live births",
+      "type": "integer",
+      "enableWhen": [
+        {
+          "question": "previous-pregnancies",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 20
+        }
+      ]
+    },
+    {
+      "linkId": "bp-systolic",
+      "text": "Systolic blood pressure (mmHg)",
+      "type": "integer",
+      "required": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 50
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 300
+        }
+      ]
+    },
+    {
+      "linkId": "bp-diastolic",
+      "text": "Diastolic blood pressure (mmHg)",
+      "type": "integer",
+      "required": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 30
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 200
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "bp-diastolic-below-systolic"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='bp-systolic').answer.value.empty() or %resource.repeat(item).where(linkId='bp-diastolic').answer.value.all($this < %resource.repeat(item).where(linkId='bp-systolic').answer.value.first())"
+            },
+            {
+              "url": "human",
+              "valueString": "Diastolic must be lower than systolic"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
