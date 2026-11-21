@@ -24,7 +24,10 @@ val fhirJson = Json {
     encodeDefaults = false
 }
 
-private val prettyFhirJson = Json(fhirJson) { prettyPrint = true }
+private val prettyFhirJson = Json(fhirJson) {
+    prettyPrint = true
+    prettyPrintIndent = "  "
+}
 
 fun Resource.toJson(pretty: Boolean = false): String =
     (if (pretty) prettyFhirJson else fhirJson).encodeToString(Resource.serializer(), this)
