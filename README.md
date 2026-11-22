@@ -5,8 +5,8 @@ web (Kotlin/Wasm), built on the OHS FHIR Foundations libraries. Project context 
 - [/shared](./shared) holds all shared code: Compose UI, FHIR logic and the thin platform layers in
   `src/<platform>Main`. It also builds the desktop app (`jvmMain`) and the web app (`wasmJsMain`).
 - [/androidApp](./androidApp) is the Android application shell.
-- [/iosApp](./iosApp) is the iOS application shell. Its Xcode project is rewired to the Gradle
-  build in Milestone 4.
+- [/iosApp](./iosApp) is the iOS application shell. Its Xcode build phase runs
+  `:shared:embedAndSignAppleFrameworkForXcode`.
 - [/server](./server) documents the local HAPI FHIR server (`docker-compose.yml`).
 
 ### Running
@@ -14,6 +14,9 @@ web (Kotlin/Wasm), built on the OHS FHIR Foundations libraries. Project context 
 - Android: `./gradlew :androidApp:installDebug`
 - Desktop: `./gradlew :shared:run`
 - Web: `./gradlew :shared:wasmJsBrowserDevelopmentRun` (serves on http://localhost:8086)
+- iOS: open `iosApp/iosApp.xcodeproj` in Xcode and run the `iosApp` scheme on an iOS 16+ simulator.
+  For a real iPhone, copy `iosApp/iosApp/Local.xcconfig.example` to `Local.xcconfig` and set your
+  team. Builds with Xcode 16 (iOS 18 SDK); see the note in `iosApp/iosApp/Config.xcconfig`.
 - FHIR server: `docker compose up -d` (see [server/README.md](./server/README.md))
 
 ### Testing
