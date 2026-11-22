@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -27,6 +28,12 @@ class DesktopAppTest {
         if (FhirEngineProvider.isNotInitialized()) FhirEngineProvider.init(FhirEngineConfiguration(testMode = true))
         setContent { App() }
         waitForText("Ngozi Adeyemi")
+
+        // The header's arrow leaves the form without saving.
+        onNodeWithText("+ Register patient").performClick()
+        waitForText("Register patient")
+        onNodeWithContentDescription("Back").performClick()
+        waitForText("+ Register patient")
 
         onNodeWithText("+ Register patient").performClick()
         waitUntil(timeoutMillis = 30_000) { onAllNodes(hasSetTextAction()).fetchSemanticsNodes().size >= 6 }
@@ -56,6 +63,11 @@ class DesktopAppTest {
         waitForText("• Refer to a doctor today to check for pre-eclampsia")
         onNodeWithText("Back to patient list").performClick()
         waitForText("Amara Okafor")
+
+        onNodeWithText("Amara Okafor").performClick()
+        waitForText("Weeks pregnant")
+        onNodeWithContentDescription("Back").performClick()
+        waitForText("+ Register patient")
     }
 
     private fun ComposeUiTest.field(index: Int) = onAllNodes(hasSetTextAction())[index]

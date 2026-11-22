@@ -24,6 +24,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -42,6 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -366,11 +371,18 @@ private fun CarePlanCard(patient: Patient, observations: List<Observation>) {
 @Composable
 private fun ScreenHeader(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = onBack, modifier = Modifier.height(48.dp)) { Text("Back", style = MaterialTheme.typography.titleMedium) }
-        Spacer(Modifier.padding(4.dp))
+        IconButton(onClick = onBack) { Icon(BackArrow, contentDescription = "Back") }
         Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
     }
 }
+
+// Material's "arrow back" path, drawn here rather than adding the material-icons dependency for one
+// icon (the web font has no "←" glyph).
+private val BackArrow =
+    ImageVector.Builder("BackArrow", 24.dp, 24.dp, 24f, 24f).path(fill = SolidColor(Color.Black)) {
+        moveTo(20f, 11f); horizontalLineTo(7.83f); lineTo(13.42f, 5.41f); lineTo(12f, 4f); lineTo(4f, 12f)
+        lineTo(12f, 20f); lineTo(13.41f, 18.59f); lineTo(7.83f, 13f); horizontalLineTo(20f); close()
+    }.build()
 
 @Composable
 private fun SummaryLine(label: String, value: String, color: Color = Color.Unspecified, modifier: Modifier = Modifier) {
