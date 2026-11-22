@@ -17,7 +17,10 @@ web (Kotlin/Wasm), built on the OHS FHIR Foundations libraries. Project context 
 - iOS: open `iosApp/iosApp.xcodeproj` in Xcode and run the `iosApp` scheme on an iOS 16+ simulator.
   For a real iPhone, copy `iosApp/iosApp/Local.xcconfig.example` to `Local.xcconfig` and set your
   team. Builds with Xcode 16 (iOS 18 SDK); see the note in `iosApp/iosApp/Config.xcconfig`.
-- FHIR server: `docker compose up -d` (see [server/README.md](./server/README.md))
+- FHIR server: Sync uses HAPI's public test server (`https://hapi.fhir.org/baseR4/`), so anything
+  synced is public; only fictional data. To use a local HAPI server instead, run `docker compose up -d`
+  (see [server/README.md](./server/README.md)) and change `defaultServerUrl` in
+  `shared/src/commonMain/kotlin/dev/ohs/demo/anc/net/ServerConfig.kt`.
 
 ### Testing
 

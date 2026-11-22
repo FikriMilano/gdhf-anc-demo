@@ -14,6 +14,10 @@ import kotlin.uuid.Uuid
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -33,6 +37,22 @@ fun Resource.toJson(pretty: Boolean = false): String =
     (if (pretty) prettyFhirJson else fhirJson).encodeToString(Resource.serializer(), this)
 
 fun parseResource(json: String): Resource = fhirJson.decodeFromString(Resource.serializer(), json)
+
+/**
+ * Every resource this app creates carries this tag, and Sync downloads only tagged resources, so
+ * the app shares the public server with other data without pulling it in.
+ */
+const val DEMO_TAG_SYSTEM = "http://example.org/gdhf-anc-demo"
+const val DEMO_TAG_CODE = "gdhf-anc-demo"
+
+private val demoMeta = buildJsonObject {
+    putJsonArray("tag") {
+        addJsonObject {
+            put("system", DEMO_TAG_SYSTEM)
+            put("code", DEMO_TAG_CODE)
+        }
+    }
+}
 
 suspend fun registrationQuestionnaireJson(): String =
     Res.readBytes("files/registration-questionnaire.json").decodeToString()
@@ -55,7 +75,7 @@ class Registration(val resources: List<Resource>) {
  *
  * Extraction links resources with `urn:uuid:` full URLs. To store them in the Engine, each resource
  * gets that UUID as its id, and references to it are rewritten as `Type/id`. Resources without a
- * full URL get a new UUID.
+ * full URL get a new UUID. Each resource also gets the demo tag ([DEMO_TAG_CODE]).
  */
 @OptIn(ExperimentalUuidApi::class)
 fun extractRegistration(questionnaireJson: String, response: QuestionnaireResponse): Registration {
@@ -76,7 +96,7 @@ fun extractRegistration(questionnaireJson: String, response: QuestionnaireRespon
     val resources =
         entries.map { entry ->
             val id = entry["fullUrl"]?.jsonPrimitive?.content?.removePrefix("urn:uuid:") ?: Uuid.random().toString()
-            val withId = JsonObject(entry.getValue("resource").jsonObject + ("id" to JsonPrimitive(id)))
+            val withId = JsonObject(entry.getValue("resource").jsonObject + ("id" to JsonPrimitive(id)) + ("meta" to demoMeta))
             var json = withId.toString()
             localReferences.forEach { (fullUrl, reference) -> json = json.replace("\"$fullUrl\"", "\"$reference\"") }
             parseResource(json)

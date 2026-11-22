@@ -1,5 +1,6 @@
 package dev.ohs.demo.anc.data
 
+import dev.ohs.demo.anc.fhir.DEMO_TAG_CODE
 import dev.ohs.demo.anc.fhir.Registration
 import dev.ohs.demo.anc.fhir.parseResource
 import dev.ohs.demo.anc.net.serverConfiguration
@@ -26,6 +27,8 @@ import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
@@ -134,13 +137,18 @@ class AncRepository(private val engine: FhirEngine) {
 private class AncSyncTask(private val engine: FhirEngine) : FhirSyncTask {
     override fun getFhirEngine() = engine
 
-    // ponytail: downloads every Patient and Observation each time; filter (e.g. by a demo tag) and
-    // keep _lastUpdated timestamps once the server holds more than this demo's data.
-    override fun getDownloadWorkManager() =
-        ResourceParamsBasedDownloadWorkManager(
-            mapOf(ResourceType.Patient to emptyMap(), ResourceType.Observation to emptyMap()),
+    override fun getDownloadWorkManager(): ResourceParamsBasedDownloadWorkManager {
+        // HAPI reuses the results of an identical search for 60 s, and Sync downloads before it
+        // uploads, so a phone syncing just after another would miss its new patient. A _lastUpdated
+        // bound that changes every second keeps each query new; "up to tomorrow" matches everything.
+        val upToTomorrow = Instant.fromEpochSeconds(Clock.System.now().epochSeconds).plus(1.days)
+        val params = mapOf("_tag" to DEMO_TAG_CODE, "_count" to "500", "_lastUpdated" to "le$upToTomorrow")
+        // ponytail: downloads all demo-tagged data each time; keep _lastUpdated timestamps if it grows.
+        return ResourceParamsBasedDownloadWorkManager(
+            mapOf(ResourceType.Patient to params, ResourceType.Observation to params),
             NoTimestamps,
         )
+    }
 
     override fun getConflictResolver() = AcceptLocalConflictResolver
 

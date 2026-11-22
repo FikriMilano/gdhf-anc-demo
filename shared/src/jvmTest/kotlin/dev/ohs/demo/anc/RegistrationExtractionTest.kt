@@ -1,8 +1,10 @@
 package dev.ohs.demo.anc
 
+import dev.ohs.demo.anc.fhir.DEMO_TAG_CODE
 import dev.ohs.demo.anc.fhir.extractRegistration
 import dev.ohs.demo.anc.fhir.parseResource
 import dev.ohs.demo.anc.fhir.registrationQuestionnaireJson
+import dev.ohs.demo.anc.fhir.toJson
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import kotlin.test.Test
@@ -28,6 +30,10 @@ class RegistrationExtractionTest {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val observations = registration.resources.filterIsInstance<Observation>().associateBy { it.loinc() }
         assertEquals(setOf("8665-2", "11884-4", "11778-8", "11996-6", "11636-8", "85354-9"), observations.keys)
+        // Sync downloads only resources with the demo tag.
+        registration.resources.forEach {
+            assertEquals(DEMO_TAG_CODE, it.meta?.tag?.single()?.code?.value, it.toJson())
+        }
         observations.values.forEach {
             assertEquals("Patient/${patient.id}", it.subject?.reference?.value)
             assertEquals(today, it.effective?.asDateTime()?.value?.value.toString())
