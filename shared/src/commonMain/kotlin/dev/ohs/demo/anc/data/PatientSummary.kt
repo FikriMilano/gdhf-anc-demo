@@ -6,6 +6,7 @@ import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.yearsUntil
 
 object Loinc {
@@ -38,6 +39,19 @@ data class PatientSummary(
 ) {
     fun weeksPregnant(today: LocalDate): String? = lmp?.let { gestationalAge(it, today) }
 }
+
+/**
+ * List order: latest visit first. Visits only have a date, so on a busy demo day many tie; among
+ * those the most recently saved comes first, so a patient just registered is at the top. The
+ * Engine leaves `meta.lastUpdated` empty until a resource is uploaded (then it is the server's
+ * time), so a patient not yet synced counts as the newest.
+ */
+val newestFirst: Comparator<PatientSummary> =
+    compareByDescending<PatientSummary> { it.lastVisit }
+        .thenByDescending { it.savedAt ?: kotlin.time.Instant.DISTANT_FUTURE }
+
+private val PatientSummary.savedAt: kotlin.time.Instant?
+    get() = (patient.meta?.lastUpdated?.value as? FhirDateTime.DateTime)?.let { it.dateTime.toInstant(it.utcOffset) }
 
 /** Gestational age from the first day of the last menstrual period, e.g. "24 w 3 d". */
 fun gestationalAge(lmp: LocalDate, today: LocalDate): String {

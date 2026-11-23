@@ -98,7 +98,7 @@ class AncRepository(private val engine: FhirEngine) {
         return patients
             .map { summarize(it, observationsBySubject["Patient/${it.id}"].orEmpty(), today) }
             .filter { !highBloodPressureOnly || it.bloodPressure?.isHigh == true }
-            .sortedByDescending { it.lastVisit }
+            .sortedWith(newestFirst)
     }
 
     suspend fun patient(id: String): PatientSummary? = patients().firstOrNull { it.id == id }
@@ -128,7 +128,10 @@ class AncRepository(private val engine: FhirEngine) {
             withContext(Dispatchers.Default) { AncSyncTask(engine).runSync(taskName = null) {} } is SyncJobStatus.Succeeded
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+            // Throwable, not Exception: on the web, Ktor reports "no network" as kotlin.Error("Fail to
+            // fetch"), which the Engine's downloader (it catches Exception) lets through. Catching
+            // only Exception left the list stuck on "Syncing…".
             println("Sync failed: $e")
             false
         }

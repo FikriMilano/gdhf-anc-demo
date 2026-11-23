@@ -16,12 +16,15 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -61,8 +64,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.ohs.demo.anc.data.AncRepository
@@ -112,6 +118,10 @@ fun PatientListScreen(
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
     val pending by produceState<Int?>(null, reloads, refreshKey) { value = repository.pendingSyncCount() }
+    // On a phone the keyboard leaves no room for results under the search field, so while it is open
+    // the Sync row and the Register button step aside, and its Search key closes it.
+    val keyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val focusManager = LocalFocusManager.current
 
     // Material's collapsing app bar: the title shrinks into one line as the list scrolls and the
     // badge scrolls away. Search and the filter stay, so they are one tap away, and Sync sits at the
@@ -193,6 +203,8 @@ fun PatientListScreen(
                 onValueChange = { query = it },
                 label = { Text("Search by name") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                 modifier = Modifier.fillMaxWidth(),
             )
             FilterChip(
@@ -216,7 +228,7 @@ fun PatientListScreen(
                 // sync or search puts above it would appear off-screen.
                 items(list) { PatientRow(it, selected = it.id == selectedId, onClick = { onOpenPatient(it.id) }) }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            if (!keyboardOpen) Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     syncStatus(syncing, syncFailed, pending),
                     style = MaterialTheme.typography.bodyLarge,
@@ -236,7 +248,7 @@ fun PatientListScreen(
                     modifier = Modifier.height(48.dp),
                 ) { Text("Sync", style = MaterialTheme.typography.titleMedium) }
             }
-            Button(onClick = onRegister, modifier = Modifier.fillMaxWidth().height(64.dp)) {
+            if (!keyboardOpen) Button(onClick = onRegister, modifier = Modifier.fillMaxWidth().height(64.dp)) {
                 Text("+ Register patient", style = MaterialTheme.typography.titleLarge)
             }
         }
