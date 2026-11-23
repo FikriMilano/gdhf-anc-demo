@@ -52,7 +52,7 @@ class DesktopAppTest {
 
         onNodeWithText("No").performClick()
         field(4).performTextInput("400")
-        waitForText("Maximum value allowed is:300", substring = true)
+        waitForText("Systolic must be between 50 and 300 mmHg")
         field(4).performTextReplacement("148")
         field(5).performTextInput("96")
         Thread.sleep(800) // text input is debounced (500 ms) before the answer is recorded
@@ -68,6 +68,24 @@ class DesktopAppTest {
         waitForText("Weeks pregnant")
         onNodeWithContentDescription("Back").performClick()
         waitForText("+ Register patient")
+    }
+
+    @Test
+    fun `wide window keeps the list beside the patient and the form`() = runDesktopComposeUiTest(width = 1200, height = 900) {
+        if (FhirEngineProvider.isNotInitialized()) FhirEngineProvider.init(FhirEngineConfiguration(testMode = true))
+        setContent { App() }
+        waitForText("Ngozi Adeyemi")
+        waitForText("Select a patient, or register a new one.")
+
+        onNodeWithText("Ngozi Adeyemi").performClick()
+        waitForText("Weeks pregnant")
+        onNodeWithText("+ Register patient").assertExists()
+
+        onNodeWithText("+ Register patient").performClick()
+        waitForText("Register patient")
+        onNodeWithText("Ngozi Adeyemi").assertExists()
+        onNodeWithContentDescription("Back").performClick()
+        waitForText("Select a patient, or register a new one.")
     }
 
     private fun ComposeUiTest.field(index: Int) = onAllNodes(hasSetTextAction())[index]

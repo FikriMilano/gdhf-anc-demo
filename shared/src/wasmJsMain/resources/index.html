@@ -16,5 +16,9 @@
         </circle>
     </svg>
     <script src="anc.js"></script>
+    <script>
+        // Offline support: see sw.js.
+        if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+    </script>
 </body>
 </html>

@@ -667,12 +667,25 @@
       ],
       "extension": [
         {
-          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-          "valueInteger": 1
-        },
-        {
-          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-          "valueInteger": 20
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "pregnancy-count-range"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='pregnancy-count').answer.value.all($this >= 1 and $this <= 20)"
+            },
+            {
+              "url": "human",
+              "valueString": "Enter a number from 1 to 20"
+            }
+          ]
         }
       ]
     },
@@ -689,12 +702,25 @@
       ],
       "extension": [
         {
-          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-          "valueInteger": 0
-        },
-        {
-          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-          "valueInteger": 20
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "live-births-range"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='live-births').answer.value.all($this >= 0 and $this <= 20)"
+            },
+            {
+              "url": "human",
+              "valueString": "Enter a number from 0 to 20"
+            }
+          ]
         }
       ]
     },
@@ -705,12 +731,25 @@
       "required": true,
       "extension": [
         {
-          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-          "valueInteger": 50
-        },
-        {
-          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-          "valueInteger": 300
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "bp-systolic-range"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='bp-systolic').answer.value.all($this >= 50 and $this <= 300)"
+            },
+            {
+              "url": "human",
+              "valueString": "Systolic must be between 50 and 300 mmHg"
+            }
+          ]
         }
       ]
     },
@@ -721,12 +760,25 @@
       "required": true,
       "extension": [
         {
-          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
-          "valueInteger": 30
-        },
-        {
-          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
-          "valueInteger": 200
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",
+          "extension": [
+            {
+              "url": "key",
+              "valueId": "bp-diastolic-range"
+            },
+            {
+              "url": "severity",
+              "valueCode": "error"
+            },
+            {
+              "url": "expression",
+              "valueString": "%resource.repeat(item).where(linkId='bp-diastolic').answer.value.all($this >= 30 and $this <= 200)"
+            },
+            {
+              "url": "human",
+              "valueString": "Diastolic must be between 30 and 200 mmHg"
+            }
+          ]
         },
         {
           "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-constraint",

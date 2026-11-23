@@ -14,6 +14,11 @@ web (Kotlin/Wasm), built on the OHS FHIR Foundations libraries. Project context 
 - Android: `./gradlew :androidApp:installDebug`
 - Desktop: `./gradlew :shared:run`
 - Web: `./gradlew :shared:wasmJsBrowserDevelopmentRun` (serves on http://localhost:8086)
+- Web for hosting: `./gradlew :shared:wasmJsBrowserDistribution`, then upload
+  `shared/build/dist/wasmJs/productionExecutable`. The host must send the
+  `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` headers
+  (browser storage needs them; see `shared/webpack.config.d/dev-server.js`). After the first visit the
+  app works offline, including reloads (`shared/src/wasmJsMain/resources/sw.js`).
 - iOS: open `iosApp/iosApp.xcodeproj` in Xcode and run the `iosApp` scheme on an iOS 16+ simulator.
   For a real iPhone, copy `iosApp/iosApp/Local.xcconfig.example` to `Local.xcconfig` and set your
   team. Builds with Xcode 16 (iOS 18 SDK); see the note in `iosApp/iosApp/Config.xcconfig`.

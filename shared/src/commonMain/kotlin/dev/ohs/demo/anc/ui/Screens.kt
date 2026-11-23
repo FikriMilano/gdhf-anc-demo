@@ -1,5 +1,9 @@
 package dev.ohs.demo.anc.ui
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -8,12 +12,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -21,19 +27,23 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +57,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +70,7 @@ import dev.ohs.demo.anc.data.Loinc
 import dev.ohs.demo.anc.data.PatientSummary
 import dev.ohs.demo.anc.data.effectiveDate
 import dev.ohs.demo.anc.data.loinc
+import dev.ohs.demo.anc.data.summarize
 import dev.ohs.demo.anc.data.today
 import dev.ohs.demo.anc.fhir.Registration
 import dev.ohs.demo.anc.fhir.extractRegistration
@@ -66,86 +81,164 @@ import dev.ohs.fhir.datacapture.Questionnaire
 import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
+import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val HighBpRed = Color(0xFFB3261E)
 
 /** Screen 1: the patient list. Long-press the title to reset the demo data. */
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun PatientListScreen(repository: AncRepository, onRegister: () -> Unit, onOpenPatient: (String) -> Unit) {
+fun PatientListScreen(
+    repository: AncRepository,
+    onRegister: () -> Unit,
+    onOpenPatient: (String) -> Unit,
+    refreshKey: Int = 0,
+    selectedId: String? = null,
+) {
     var query by remember { mutableStateOf("") }
     var highBpOnly by remember { mutableStateOf(false) }
     var reloads by remember { mutableIntStateOf(0) }
     var confirmReset by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val patients by produceState<List<PatientSummary>?>(null, query, highBpOnly, reloads) {
+    val patients by produceState<List<PatientSummary>?>(null, query, highBpOnly, reloads, refreshKey) {
         value = repository.patients(query, highBpOnly)
     }
     var syncing by remember { mutableStateOf(false) }
     var syncFailed by remember { mutableStateOf(false) }
-    val pending by produceState<Int?>(null, reloads) { value = repository.pendingSyncCount() }
+    val pending by produceState<Int?>(null, reloads, refreshKey) { value = repository.pendingSyncCount() }
 
-    Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            "Antenatal Care",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.combinedClickable(onClick = {}, onLongClick = { confirmReset = true }),
-        )
-        Pill("Offline · saved on this device")
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                syncStatus(syncing, syncFailed, pending),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (syncFailed) HighBpRed else Color.Unspecified,
-                modifier = Modifier.weight(1f),
-            )
-            OutlinedButton(
-                onClick = {
-                    syncing = true
-                    scope.launch {
-                        syncFailed = !repository.sync()
-                        syncing = false
-                        reloads++
+    // Material's collapsing app bar: the title shrinks into one line as the list scrolls and the
+    // badge scrolls away. Search and the filter stay, so they are one tap away, and Sync sits at the
+    // bottom next to its status, where a thumb reaches it.
+    val listState = rememberLazyListState()
+    val listScrolls = listState.canScrollForward || listState.canScrollBackward
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        canScroll = { listState.canScrollForward || listState.canScrollBackward },
+        snapAnimationSpec = null, // settled once, below, for touch and mouse alike
+    )
+    val bar = scrollBehavior.state
+    // A short, eased move instead of a spring, whose slow last pixels make the bar feel laggy. The
+    // time scales with the distance, so a few leftover pixels don't take the full 200 ms.
+    suspend fun moveBar(to: Float) {
+        val share = abs(to - bar.heightOffset) / abs(bar.heightOffsetLimit).coerceAtLeast(1f)
+        val spec = tween<Float>(durationMillis = (200 * share).toInt().coerceIn(40, 200), easing = FastOutSlowInEasing)
+        animate(bar.heightOffset, to, animationSpec = spec) { value, _ -> bar.heightOffset = value }
+    }
+    // Material settles the bar only after a touch fling, and mouse wheels never fling, so settle it
+    // here once scrolling has paused (wheel notches come in quick bursts). A new scroll restarts the
+    // effect, which cancels a settle in progress, so the two never fight. A list too short to scroll
+    // (e.g. after a search) keeps the bar open.
+    LaunchedEffect(listState.isScrollInProgress, listScrolls) {
+        if (listState.isScrollInProgress) return@LaunchedEffect
+        delay(120)
+        val open = !listScrolls || (!listState.canScrollBackward && bar.collapsedFraction < 0.5f)
+        moveBar(if (open) 0f else bar.heightOffsetLimit)
+    }
+    Column(
+        Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            // Mouse wheel: one notch would jump the bar closed, and Compose drops wheel-up at the top
+            // of the list (the list can't take it), so it would never reopen. Instead the first notch
+            // that changes the bar plays the same short animation, and the list scrolls after that.
+            // Touch scrolling still moves the bar with the finger (Material's nested scroll).
+            .pointerInput(Unit) {
+                var animating: Job? = null
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        if (event.type != PointerEventType.Scroll) continue
+                        val dy = event.changes.first().scrollDelta.y
+                        val listCanScroll = listState.canScrollForward || listState.canScrollBackward
+                        val target = when {
+                            dy > 0f && listCanScroll && bar.collapsedFraction < 1f -> bar.heightOffsetLimit
+                            dy < 0f && !listState.canScrollBackward && bar.heightOffset < 0f -> 0f
+                            else -> continue
+                        }
+                        event.changes.forEach { it.consume() }
+                        if (animating?.isActive != true) {
+                            animating = scope.launch { moveBar(target) }
+                        }
                     }
-                },
-                enabled = !syncing,
-                modifier = Modifier.height(48.dp),
-            ) { Text("Sync", style = MaterialTheme.typography.titleMedium) }
-        }
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            label = { Text("Search by name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        FilterChip(
-            selected = highBpOnly,
-            onClick = { highBpOnly = !highBpOnly },
-            label = { Text("High blood pressure", style = MaterialTheme.typography.bodyLarge) },
-            // The default selected colour (lavender) is too close to the background to read as "on".
-            colors = FilterChipDefaults.filterChipColors(
-                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                }
+            },
+    ) {
+        MediumTopAppBar(
+            title = {
+                Text(
+                    "Antenatal Care",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.combinedClickable(onClick = {}, onLongClick = { confirmReset = true }),
+                )
+            },
+            windowInsets = WindowInsets(0), // App() applies the safe-area insets.
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                scrolledContainerColor = MaterialTheme.colorScheme.background,
             ),
-            modifier = Modifier.height(48.dp),
+            scrollBehavior = scrollBehavior,
         )
-        LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            val list = patients.orEmpty()
-            if (patients != null && list.isEmpty()) {
-                item { Text("No patients found", style = MaterialTheme.typography.bodyLarge) }
+        Column(
+            Modifier.weight(1f).padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                label = { Text("Search by name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            FilterChip(
+                selected = highBpOnly,
+                onClick = { highBpOnly = !highBpOnly },
+                label = { Text("High blood pressure", style = MaterialTheme.typography.bodyLarge) },
+                // The default selected colour (lavender) is too close to the background to read as "on".
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                modifier = Modifier.height(48.dp),
+            )
+            LazyColumn(Modifier.weight(1f), listState, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item { Pill("Offline · saved on this device") }
+                val list = patients.orEmpty()
+                if (patients != null && list.isEmpty()) {
+                    item { Text("No patients found", style = MaterialTheme.typography.bodyLarge) }
+                }
+                // No item keys: with keys, Compose keeps the old first row in view, so a patient that
+                // sync or search puts above it would appear off-screen.
+                items(list) { PatientRow(it, selected = it.id == selectedId, onClick = { onOpenPatient(it.id) }) }
             }
-            // No item keys: with keys, Compose keeps the old first row in view, so a patient that
-            // sync or search puts above it would appear off-screen.
-            items(list) { PatientRow(it, onClick = { onOpenPatient(it.id) }) }
-        }
-        Button(onClick = onRegister, modifier = Modifier.fillMaxWidth().height(64.dp)) {
-            Text("+ Register patient", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    syncStatus(syncing, syncFailed, pending),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (syncFailed) HighBpRed else Color.Unspecified,
+                    modifier = Modifier.weight(1f),
+                )
+                OutlinedButton(
+                    onClick = {
+                        syncing = true
+                        scope.launch {
+                            syncFailed = !repository.sync()
+                            syncing = false
+                            reloads++
+                        }
+                    },
+                    enabled = !syncing,
+                    modifier = Modifier.height(48.dp),
+                ) { Text("Sync", style = MaterialTheme.typography.titleMedium) }
+            }
+            Button(onClick = onRegister, modifier = Modifier.fillMaxWidth().height(64.dp)) {
+                Text("+ Register patient", style = MaterialTheme.typography.titleLarge)
+            }
         }
     }
 
@@ -185,11 +278,17 @@ private fun syncStatus(syncing: Boolean, failed: Boolean, pending: Int?): String
 }
 
 @Composable
-private fun PatientRow(patient: PatientSummary, onClick: () -> Unit) {
+private fun PatientRow(patient: PatientSummary, selected: Boolean, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
+        colors = CardDefaults.cardColors(
+            containerColor =
+                if (selected) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceContainerLowest,
+        ),
+        // The patient open in the right-hand pane on wide screens.
+        border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -227,6 +326,9 @@ fun RegistrationScreen(repository: AncRepository, onSaved: (Registration) -> Uni
                     showCancelButton = false,
                     submitButtonText = "Save",
                     showSubmitAnywayWhenValidationFails = false,
+                    // An asterisk on required questions instead of "Required" under every field.
+                    showAsterisk = true,
+                    showRequiredText = false,
                 ),
                 onSubmit = { getResponse ->
                     scope.launch {
@@ -253,16 +355,23 @@ fun RegistrationScreen(repository: AncRepository, onSaved: (Registration) -> Uni
 
 /** Screen 3: what was saved, with the generated FHIR for developers. */
 @Composable
-fun SavedScreen(registration: Registration, onBackToList: () -> Unit) {
+fun SavedScreen(registration: Registration, doneLabel: String = "Back to patient list", onBackToList: () -> Unit) {
     var showFhir by remember { mutableStateOf(false) }
     val fhirJson = remember(registration) { registration.toPrettyJson() }
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Saved", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text(
-            "1 patient, ${registration.observationCount} observations",
-            style = MaterialTheme.typography.titleLarge,
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                remember(registration) { summarize(registration.patient, emptyList(), today()).name },
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                "1 patient, ${registration.observationCount} observations",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
         CarePlanCard(registration.patient, registration.resources.filterIsInstance<Observation>())
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("View FHIR", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -287,7 +396,7 @@ fun SavedScreen(registration: Registration, onBackToList: () -> Unit) {
             Spacer(Modifier.weight(1f))
         }
         Button(onClick = onBackToList, modifier = Modifier.fillMaxWidth().height(64.dp)) {
-            Text("Back to patient list", style = MaterialTheme.typography.titleLarge)
+            Text(doneLabel, style = MaterialTheme.typography.titleLarge)
         }
     }
 }

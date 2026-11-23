@@ -5,3 +5,6 @@ class JVMPlatform: Platform {
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
+
+@androidx.compose.runtime.Composable
+actual fun BrowserBackHandler(enabled: Boolean, onBack: () -> Unit) {}

@@ -2,30 +2,38 @@ package dev.ohs.demo.anc
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.ohs.demo.anc.data.AncRepository
 import dev.ohs.demo.anc.data.fhirEngine
+import dev.ohs.demo.anc.fhir.BundledFiles
 import dev.ohs.demo.anc.fhir.Registration
 import dev.ohs.demo.anc.ui.PatientDetailScreen
 import dev.ohs.demo.anc.ui.PatientListScreen
@@ -72,6 +80,7 @@ fun App(platformContext: Any = Unit) {
             Box(Modifier.weight(1f).fillMaxWidth()) {
                 val repository by produceState<AncRepository?>(null) {
                     value = withContext(Dispatchers.Default) {
+                        BundledFiles.preload()
                         AncRepository(fhirEngine(platformContext)).also { it.seedIfEmpty() }
                     }
                 }
@@ -87,24 +96,67 @@ fun App(platformContext: Any = Unit) {
 @Composable
 private fun AncNavigation(repository: AncRepository) {
     var screen by remember { mutableStateOf<Screen>(Screen.PatientList) }
-    // System Back (e.g. Android) returns to the list instead of closing the app.
+    // Bumped after a save, so a list that stays on screen (two panes) reloads.
+    var saves by remember { mutableIntStateOf(0) }
+    // System Back (e.g. Android) and the browser's Back return to the list instead of leaving.
     BackHandler(enabled = screen != Screen.PatientList) { screen = Screen.PatientList }
-    when (val current = screen) {
-        Screen.PatientList ->
-            PatientListScreen(
-                repository = repository,
-                onRegister = { screen = Screen.Register },
-                onOpenPatient = { screen = Screen.PatientDetail(it) },
-            )
+    BrowserBackHandler(enabled = screen != Screen.PatientList) { screen = Screen.PatientList }
+
+    @Composable
+    fun list(selectedId: String? = null) = PatientListScreen(
+        repository = repository,
+        onRegister = { screen = Screen.Register },
+        onOpenPatient = { screen = Screen.PatientDetail(it) },
+        refreshKey = saves,
+        selectedId = selectedId,
+    )
+
+    @Composable
+    fun details(current: Screen, wide: Boolean) = when (current) {
+        Screen.PatientList -> Unit
         Screen.Register ->
             RegistrationScreen(
                 repository = repository,
-                onSaved = { screen = Screen.Saved(it) },
+                onSaved = { saves++; screen = Screen.Saved(it) },
                 onCancel = { screen = Screen.PatientList },
             )
-        is Screen.Saved -> SavedScreen(current.registration, onBackToList = { screen = Screen.PatientList })
+        is Screen.Saved ->
+            SavedScreen(current.registration, doneLabel = if (wide) "Done" else "Back to patient list") {
+                screen = Screen.PatientList
+            }
         is Screen.PatientDetail ->
             PatientDetailScreen(repository, current.patientId, onBack = { screen = Screen.PatientList })
+    }
+
+    // Material's window size classes: below 840dp one screen at a time, centred and no wider than
+    // 640dp so fields and cards don't stretch; from 840dp the list stays on the left (list-detail).
+    BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        val wide = maxWidth >= 840.dp
+        if (!wide) {
+            Box(Modifier.widthIn(max = 640.dp).fillMaxSize()) {
+                if (screen == Screen.PatientList) list() else details(screen, wide = false)
+            }
+        } else {
+            Row(Modifier.fillMaxSize()) {
+                Box(Modifier.width(400.dp).fillMaxHeight()) {
+                    list(selectedId = (screen as? Screen.PatientDetail)?.patientId)
+                }
+                VerticalDivider()
+                Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
+                    Box(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
+                        if (screen == Screen.PatientList) {
+                            Text(
+                                "Select a patient, or register a new one.",
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.align(Alignment.Center).padding(24.dp),
+                            )
+                        } else {
+                            details(screen, wide = true)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -112,7 +164,7 @@ private fun AncNavigation(repository: AncRepository) {
 private fun DemoOnlyNotice() {
     Text(
         "Demo only — don't enter real patient data",
-        modifier = Modifier.fillMaxWidth().background(Lavender).padding(vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth().background(Lavender).padding(horizontal = 16.dp, vertical = 6.dp),
         style = MaterialTheme.typography.labelLarge,
         color = Purple,
         textAlign = TextAlign.Center,

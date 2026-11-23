@@ -1,6 +1,5 @@
 package dev.ohs.demo.anc.fhir
 
-import dev.ohs.demo.anc.resources.Res
 import dev.ohs.fhir.datacapture.extraction.template.TemplateExtractionEngine
 import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.Enumeration
@@ -55,7 +54,7 @@ private val demoMeta = buildJsonObject {
 }
 
 suspend fun registrationQuestionnaireJson(): String =
-    Res.readBytes("files/registration-questionnaire.json").decodeToString()
+    BundledFiles.read("files/registration-questionnaire.json")
 
 /** The resources extracted from one completed registration form. */
 class Registration(val resources: List<Resource>) {

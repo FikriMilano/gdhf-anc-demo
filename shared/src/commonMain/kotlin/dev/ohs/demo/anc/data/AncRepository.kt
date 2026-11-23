@@ -1,10 +1,10 @@
 package dev.ohs.demo.anc.data
 
+import dev.ohs.demo.anc.fhir.BundledFiles
 import dev.ohs.demo.anc.fhir.DEMO_TAG_CODE
 import dev.ohs.demo.anc.fhir.Registration
 import dev.ohs.demo.anc.fhir.parseResource
 import dev.ohs.demo.anc.net.serverConfiguration
-import dev.ohs.demo.anc.resources.Res
 import dev.ohs.fhir.engine.FhirEngine
 import dev.ohs.fhir.engine.FhirEngineConfiguration
 import dev.ohs.fhir.engine.FhirEngineProvider
@@ -66,7 +66,7 @@ class AncRepository(private val engine: FhirEngine) {
      * changes waiting to sync.
      */
     private suspend fun loadSeed() {
-        val bundle = parseResource(Res.readBytes("files/seed-bundle.json").decodeToString()) as Bundle
+        val bundle = parseResource(BundledFiles.read("files/seed-bundle.json")) as Bundle
         val resources = bundle.entry.mapNotNull { it.resource }
         engine.syncDownload(AcceptRemoteConflictResolver) { flowOf(resources) }
     }

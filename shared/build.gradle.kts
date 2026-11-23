@@ -83,3 +83,27 @@ compose.resources {
 compose.desktop {
   application { mainClass = "dev.ohs.demo.anc.MainKt" }
 }
+
+// The service worker (src/wasmJsMain/resources/sw.js) caches every file listed in precache.json,
+// so the hosted web app works offline after the first visit. File names change with each build.
+tasks.named("wasmJsBrowserDistribution") {
+  val dist = layout.buildDirectory.dir("dist/wasmJs/productionExecutable")
+  doLast {
+    val dir = dist.get().asFile
+    val files = dir.walkTopDown()
+      .filter { it.isFile && it.name != "precache.json" && it.extension !in setOf("map", "txt") }
+      .map { it.relativeTo(dir).invariantSeparatorsPath }.sorted().toList()
+    // "./" is the page itself, as the browser requests it.
+    dir.resolve("precache.json").writeText((listOf("./") + files).joinToString(",\n", "[\n", "\n]\n") { "\"$it\"" })
+  }
+}
+
+// The development and production web builds sync into one shared package folder, copying only files
+// whose inputs changed. After a production build the dev server then got the new development .wasm
+// with the production .mjs glue and failed at startup (LinkError). Deleting the folder before either
+// sync makes Gradle see its outputs gone and copy the full matching set.
+val webSyncs = listOf("wasmJsDevelopmentExecutableCompileSync", "wasmJsProductionExecutableCompileSync")
+val cleanWebPackage = tasks.register<Delete>("cleanWebPackage") {
+  delete(tasks.named(webSyncs.first()).map { it.outputs.files })
+}
+webSyncs.forEach { tasks.named(it) { dependsOn(cleanWebPackage) } }

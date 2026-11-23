@@ -1,6 +1,5 @@
 package dev.ohs.demo.anc.fhir
 
-import dev.ohs.demo.anc.resources.Res
 import dev.ohs.fhir.model.r4.ActivityDefinition
 import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.CarePlan
@@ -25,7 +24,7 @@ import kotlinx.datetime.LocalDate
  */
 suspend fun highBloodPressureCarePlan(patient: Patient, bloodPressure: Observation, today: LocalDate): CarePlan {
     val knowledge =
-        (parseResource(Res.readBytes("files/high-bp-plan.json").decodeToString()) as Bundle).entry.mapNotNull { it.resource }
+        (parseResource(BundledFiles.read("files/high-bp-plan.json")) as Bundle).entry.mapNotNull { it.resource }
     val resolver = CanonicalResolver { _, canonical -> knowledge.firstOrNull { it.canonicalUrl() == canonical } }
     return PlanDefinitionProcessor(ExpressionEvaluatorRouter(), resolver).apply(
         knowledge.filterIsInstance<PlanDefinition>().single(),

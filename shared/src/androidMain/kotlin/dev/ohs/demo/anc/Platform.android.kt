@@ -7,3 +7,6 @@ class AndroidPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
+
+@androidx.compose.runtime.Composable
+actual fun BrowserBackHandler(enabled: Boolean, onBack: () -> Unit) {}
