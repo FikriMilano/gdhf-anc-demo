@@ -1,0 +1,575 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../fhir-data-capture/2.0.0-alpha05-local.3/fhir-data-capture-2.0.0-alpha05-local.3.module",
+    "group": "dev.ohs.fhir",
+    "module": "fhir-data-capture",
+    "version": "2.0.0-alpha05-local.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.5"
+    }
+  },
+  "variants": [
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "permissions-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-camera",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-compose",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-resources",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-ui-tooling-preview",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-dialogs-compose",
+          "version": {
+            "requires": "0.12.0"
+          }
+        },
+        {
+          "group": "co.touchlab",
+          "module": "kermit",
+          "version": {
+            "requires": "2.0.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigation",
+          "module": "navigation-compose",
+          "version": {
+            "requires": "2.9.1"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-model-r4",
+          "version": {
+            "requires": "1.0.0-rc03"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-path-r4",
+          "version": {
+            "requires": "1.0.0-beta06"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture-iosArm64Main.klib",
+          "url": "fhir-data-capture-iosarm64-2.0.0-alpha05-local.3.klib",
+          "size": 1129315,
+          "sha512": "dbff52c6573d5fb79e02e1f3836435303f3348943c1ff949ef876e145cb9467fa311ffc941ec316b3e3e8be57406a00851d84d3206aa5a943fdffb4003ccc6c4",
+          "sha256": "9f13ad2e9ec8ff544d2516a33fe7248ee72fae044c09b4c4689d36cf845fadfa",
+          "sha1": "956c065de2e5f98f86a96572b644cc2861f31442",
+          "md5": "f1f6980af62c4205d9f7dbd746134e2d"
+        }
+      ]
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "files": [
+        {
+          "name": "datacapture-iosarm64-sources.jar",
+          "url": "fhir-data-capture-iosarm64-2.0.0-alpha05-local.3-sources.jar",
+          "size": 217743,
+          "sha512": "edf066074a61070c4895c51174dada85a612a856bd69cfb72e2c5f37d66d29f880882f3c0b25ddc335b1ad2750e2d239da6e9b263808feefe67efc82ee5c2511",
+          "sha256": "6c18a002383f61f01f028a5147af2dd3923d9f07adbb57f2b35d55d0eec477b2",
+          "sha1": "2087664a19042fb4e6687f8e51b2d97f09131363",
+          "md5": "086e256310758d2e652f2efbef3c0d7a"
+        }
+      ]
+    },
+    {
+      "name": "iosArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "permissions-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-camera",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-compose",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-resources",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-ui-tooling-preview",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-dialogs-compose",
+          "version": {
+            "requires": "0.12.0"
+          }
+        },
+        {
+          "group": "co.touchlab",
+          "module": "kermit",
+          "version": {
+            "requires": "2.0.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigation",
+          "module": "navigation-compose",
+          "version": {
+            "requires": "2.9.1"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-model-r4",
+          "version": {
+            "requires": "1.0.0-rc03"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-path-r4",
+          "version": {
+            "requires": "1.0.0-beta06"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture.kotlin_resources.zip",
+          "url": "fhir-data-capture-iosarm64-2.0.0-alpha05-local.3-kotlin_resources.kotlin_resources.zip",
+          "size": 16418,
+          "sha512": "e1853c1c8b0026045b3aa606283b23c916cb6f80f1e2d5cdc0cfbacea9d3ce25da62b90b7c1dcc2b928966c1a37f7d6c9f417f7c5451af9af1fa2f9e7592d2b4",
+          "sha256": "ca2b8a32e66d610bcb74150d5f7f95bcbb60ac8a6e128f87b665b65367807459",
+          "sha1": "eda2bbdde3e125492aff28af362b78c23bee7be3",
+          "md5": "9b4a9c78897c4c451158f8131a585cf3"
+        }
+      ]
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "permissions-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-camera",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-compose",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-resources",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-ui-tooling-preview",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-dialogs-compose",
+          "version": {
+            "requires": "0.12.0"
+          }
+        },
+        {
+          "group": "co.touchlab",
+          "module": "kermit",
+          "version": {
+            "requires": "2.0.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigation",
+          "module": "navigation-compose",
+          "version": {
+            "requires": "2.9.1"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-model-r4",
+          "version": {
+            "requires": "1.0.0-rc03"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-path-r4",
+          "version": {
+            "requires": "1.0.0-beta06"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture-iosarm64-metadata.jar",
+          "url": "fhir-data-capture-iosarm64-2.0.0-alpha05-local.3-metadata.jar",
+          "size": 4730,
+          "sha512": "d37ace459d02ef825319403beddec2673986e4678c0e75ca724b090e7b5c14e3c17ecfcd16fe85477a9ed1d9b398efd22699a756f7a37d5f57b11ab1f816fef5",
+          "sha256": "9e540f641e799c012ce5ed4415ddb2ec88d32cd56c8c0efb23d9889d7597229f",
+          "sha1": "92687f26ab6ba330981d61f5ffbcaec76e9755b1",
+          "md5": "242bfe0398875458917b2be71e55b76d"
+        }
+      ]
+    }
+  ]
+}

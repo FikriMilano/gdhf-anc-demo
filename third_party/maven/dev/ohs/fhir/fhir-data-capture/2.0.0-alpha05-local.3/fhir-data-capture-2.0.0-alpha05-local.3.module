@@ -1,0 +1,588 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.ohs.fhir",
+    "module": "fhir-data-capture",
+    "version": "2.0.0-alpha05-local.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.5"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material3",
+          "module": "material3",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-resources",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.components",
+          "module": "components-ui-tooling-preview",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-viewmodel-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.lifecycle",
+          "module": "lifecycle-runtime-compose",
+          "version": {
+            "requires": "2.9.3"
+          }
+        },
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-dialogs-compose",
+          "version": {
+            "requires": "0.12.0"
+          }
+        },
+        {
+          "group": "co.touchlab",
+          "module": "kermit",
+          "version": {
+            "requires": "2.0.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.androidx.navigation",
+          "module": "navigation-compose",
+          "version": {
+            "requires": "2.9.1"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-model-r4",
+          "version": {
+            "requires": "1.0.0-rc03"
+          }
+        },
+        {
+          "group": "dev.ohs.fhir",
+          "module": "fhir-path-r4",
+          "version": {
+            "requires": "1.0.0-beta06"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "geolocation-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.jordond.compass",
+          "module": "permissions-mobile",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-camera",
+          "version": {
+            "requires": "0.20.1"
+          }
+        },
+        {
+          "group": "dev.icerock.moko",
+          "module": "permissions-compose",
+          "version": {
+            "requires": "0.20.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "datacapture-metadata.jar",
+          "url": "fhir-data-capture-2.0.0-alpha05-local.3.jar",
+          "size": 96121,
+          "sha512": "75c2c56e34610cc84f87bc5d8ba01ba4748bb33fffafbbd5418620db221a35e732264e2feb631bb4ae4fa10de52883a9d74157ada8ebb3347887d40024b18a7e",
+          "sha256": "ad86c0f92ea5888a45e98c1d8ec31ef71c1855d25591de96187f2cfab191d89d",
+          "sha1": "881e7f0311b1651b0b7caf0c87cb9f6497208c90",
+          "md5": "8823f272e6fc484c822253f052874f5b"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "datacapture-kotlin-sources.jar",
+          "url": "fhir-data-capture-2.0.0-alpha05-local.3-sources.jar",
+          "size": 216287,
+          "sha512": "5699e99d144daf2689c74289f29844d111a3f9f3b8a81b7c2aadea28baab3143d61c0407f2ea5d83b16d8e3f22f9da4c0e0e034751f251e2c6c7e141eef32f87",
+          "sha256": "8a44b7a9768bbba8977f412970892d304a4feb6529adad677c2c7f5e83f4d3c4",
+          "sha1": "0f046905408ebdf2b44de421f8272f1cfa6a19a9",
+          "md5": "1f97ab9be78e740e6becd5894a1d8016"
+        }
+      ]
+    },
+    {
+      "name": "androidApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-android/2.0.0-alpha05-local.3/fhir-data-capture-android-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-android",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "androidRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-android/2.0.0-alpha05-local.3/fhir-data-capture-android-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-android",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "androidSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-android/2.0.0-alpha05-local.3/fhir-data-capture-android-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-android",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iosarm64/2.0.0-alpha05-local.3/fhir-data-capture-iosarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iosarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iosarm64/2.0.0-alpha05-local.3/fhir-data-capture-iosarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iosarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iosarm64/2.0.0-alpha05-local.3/fhir-data-capture-iosarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iosarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iosarm64/2.0.0-alpha05-local.3/fhir-data-capture-iosarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iosarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iossimulatorarm64/2.0.0-alpha05-local.3/fhir-data-capture-iossimulatorarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iossimulatorarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iossimulatorarm64/2.0.0-alpha05-local.3/fhir-data-capture-iossimulatorarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iossimulatorarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iossimulatorarm64/2.0.0-alpha05-local.3/fhir-data-capture-iossimulatorarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iossimulatorarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-iossimulatorarm64/2.0.0-alpha05-local.3/fhir-data-capture-iossimulatorarm64-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-iossimulatorarm64",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-js/2.0.0-alpha05-local.3/fhir-data-capture-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-js/2.0.0-alpha05-local.3/fhir-data-capture-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-js/2.0.0-alpha05-local.3/fhir-data-capture-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jsResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresourcesjs",
+        "org.gradle.usage": "kotlin-multiplatformresourcesjs",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-js/2.0.0-alpha05-local.3/fhir-data-capture-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-jvm/2.0.0-alpha05-local.3/fhir-data-capture-jvm-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-jvm",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-jvm/2.0.0-alpha05-local.3/fhir-data-capture-jvm-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-jvm",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-jvm/2.0.0-alpha05-local.3/fhir-data-capture-jvm-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-jvm",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-wasm-js/2.0.0-alpha05-local.3/fhir-data-capture-wasm-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-wasm-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-wasm-js/2.0.0-alpha05-local.3/fhir-data-capture-wasm-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-wasm-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-wasm-js/2.0.0-alpha05-local.3/fhir-data-capture-wasm-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-wasm-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    },
+    {
+      "name": "wasmJsResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresourcesjs",
+        "org.gradle.usage": "kotlin-multiplatformresourcesjs",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../fhir-data-capture-wasm-js/2.0.0-alpha05-local.3/fhir-data-capture-wasm-js-2.0.0-alpha05-local.3.module",
+        "group": "dev.ohs.fhir",
+        "module": "fhir-data-capture-wasm-js",
+        "version": "2.0.0-alpha05-local.3"
+      }
+    }
+  ]
+}
