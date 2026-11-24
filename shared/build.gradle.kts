@@ -97,8 +97,12 @@ compose.desktop {
         "java.instrument", "java.management", "jdk.security.auth", "jdk.unsupported",
         "java.net.http", "jdk.crypto.ec", "java.naming",
       )
-      macOS { bundleID = "com.fikrimilano.gdhfanc.desktop" }
+      macOS {
+        bundleID = "com.fikrimilano.gdhfanc.desktop"
+        iconFile.set(project.file("desktop-icons/AntenatalCare.icns"))
+      }
       windows {
+        iconFile.set(project.file("desktop-icons/AntenatalCare.ico"))
         menuGroup = "Antenatal Care"
         shortcut = true
         upgradeUuid = "e0ed892a-4bdc-4f14-a884-be2b5e4e9c4a" // fixed, so a new version replaces the old
