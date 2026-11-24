@@ -1,0 +1,14 @@
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
+
+PRODUCT_NAME=Antenatal Care
+PRODUCT_BUNDLE_IDENTIFIER=dev.ohs.demo.anc
+
+// To run on a real iPhone, copy Local.xcconfig.example to Local.xcconfig and set your team there.
+#include? "Local.xcconfig"
+
+// Compose Multiplatform 1.11 weakly references UIViewLayoutRegion, which only exists in the iOS 26
+// SDK. Xcode 16 (iOS 18 SDK) can't resolve it at link time, so let it stay undefined: on iOS 18 the
+// weak reference is nil (Compose only uses it on iOS 26), on iOS 26 it binds to UIKit's class.
+// Remove once the Mac has Xcode 26.
+OTHER_LDFLAGS = $(inherited) -Wl,-U,_OBJC_CLASS_$$_UIViewLayoutRegion

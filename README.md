@@ -1,26 +1,32 @@
-This is a Kotlin Multiplatform project targeting Android, Desktop (JVM), iOS, Web, built with the [Kotlin Toolchain](https://kotlin-toolchain.org/dev/).
+GDHF 2026 antenatal care demo: one Kotlin Multiplatform codebase for Android, iOS, desktop (JVM) and
+web (Kotlin/Wasm), built on the OHS FHIR Foundations libraries. Project context is in
+[AGENTS.md](./AGENTS.md).
 
-- [/androidApp](./androidApp) contains the Android application.
-- [/desktopApp](./desktopApp) contains the desktop (JVM) application.
-- [/iosApp](./iosApp) contains the iOS application.
-- [/shared](./shared) holds the code shared across your applications — Compose UI, business logic, and platform-specific implementations. [src](./shared/src) is for common code; the sibling `src@<platform>` folders (for example `src@android`) hold code compiled only for the platform named in the folder.
-- [/webApp](./webApp) contains the web application, compiled to WebAssembly with Kotlin/Wasm.
-
-The `kotlin` (macOS/Linux) and `kotlin.bat` (Windows) scripts in the project root are self-bootstrapping wrappers for the Kotlin Toolchain: they download the pinned toolchain version on first use, so no separate installation is required. Build the whole project with `./kotlin build`.
+- [/shared](./shared) holds all shared code: Compose UI, FHIR logic and the thin platform layers in
+  `src/<platform>Main`. It also builds the desktop app (`jvmMain`) and the web app (`wasmJsMain`).
+- [/androidApp](./androidApp) is the Android application shell.
+- [/iosApp](./iosApp) is the iOS application shell. Its Xcode build phase runs
+  `:shared:embedAndSignAppleFrameworkForXcode`.
+- [/server](./server) documents the local HAPI FHIR server (`docker-compose.yml`).
 
 ### Running
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also run each module from the command line:
-
-- Android app: `./kotlin run -m androidApp`
-- Desktop app: `./kotlin run -m desktopApp`
-- iOS app: `./kotlin run -m iosApp`
-- Web app: `./kotlin run -m webApp`
+- Android: `./gradlew :androidApp:installDebug`
+- Desktop: `./gradlew :shared:run`
+- Web: `./gradlew :shared:wasmJsBrowserDevelopmentRun` (serves on http://localhost:8086)
+- Web for hosting: `./gradlew :shared:wasmJsBrowserDistribution`, then upload
+  `shared/build/dist/wasmJs/productionExecutable`. The host must send the
+  `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` headers
+  (browser storage needs them; see `shared/webpack.config.d/dev-server.js`). After the first visit the
+  app works offline, including reloads (`shared/src/wasmJsMain/resources/sw.js`).
+- iOS: open `iosApp/iosApp.xcodeproj` in Xcode and run the `iosApp` scheme on an iOS 16+ simulator.
+  For a real iPhone, copy `iosApp/iosApp/Local.xcconfig.example` to `Local.xcconfig` and set your
+  team. Builds with Xcode 16 (iOS 18 SDK); see the note in `iosApp/iosApp/Config.xcconfig`.
+- FHIR server: Sync uses HAPI's public test server (`https://hapi.fhir.org/baseR4/`), so anything
+  synced is public; only fictional data. To use a local HAPI server instead, run `docker compose up -d`
+  (see [server/README.md](./server/README.md)) and change `defaultServerUrl` in
+  `shared/src/commonMain/kotlin/dev/ohs/demo/anc/net/ServerConfig.kt`.
 
 ### Testing
 
-Run the project's tests with `./kotlin test`, or `./kotlin test -m <module>` for a single module.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html), [Kotlin Toolchain](https://kotlin-toolchain.org/dev/), [Compose Multiplatform](https://kotlinlang.org/compose-multiplatform/), [Kotlin/Wasm](https://kotl.in/wasm/).
+`./gradlew :shared:allTests`
