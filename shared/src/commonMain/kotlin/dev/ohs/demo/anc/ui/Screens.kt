@@ -1,8 +1,5 @@
 package dev.ohs.demo.anc.ui
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -20,7 +17,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -37,16 +33,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,10 +55,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
@@ -87,11 +78,8 @@ import dev.ohs.fhir.datacapture.Questionnaire
 import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
-import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -123,76 +111,19 @@ fun PatientListScreen(
     val keyboardOpen = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val focusManager = LocalFocusManager.current
 
-    // Material's collapsing app bar: the title shrinks into one line as the list scrolls and the
-    // badge scrolls away. Search and the filter stay, so they are one tap away, and Sync sits at the
-    // bottom next to its status, where a thumb reaches it.
-    val listState = rememberLazyListState()
-    val listScrolls = listState.canScrollForward || listState.canScrollBackward
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        canScroll = { listState.canScrollForward || listState.canScrollBackward },
-        snapAnimationSpec = null, // settled once, below, for touch and mouse alike
-    )
-    val bar = scrollBehavior.state
-    // A short, eased move instead of a spring, whose slow last pixels make the bar feel laggy. The
-    // time scales with the distance, so a few leftover pixels don't take the full 200 ms.
-    suspend fun moveBar(to: Float) {
-        val share = abs(to - bar.heightOffset) / abs(bar.heightOffsetLimit).coerceAtLeast(1f)
-        val spec = tween<Float>(durationMillis = (200 * share).toInt().coerceIn(40, 200), easing = FastOutSlowInEasing)
-        animate(bar.heightOffset, to, animationSpec = spec) { value, _ -> bar.heightOffset = value }
-    }
-    // Material settles the bar only after a touch fling, and mouse wheels never fling, so settle it
-    // here once scrolling has paused (wheel notches come in quick bursts). A new scroll restarts the
-    // effect, which cancels a settle in progress, so the two never fight. A list too short to scroll
-    // (e.g. after a search) keeps the bar open.
-    LaunchedEffect(listState.isScrollInProgress, listScrolls) {
-        if (listState.isScrollInProgress) return@LaunchedEffect
-        delay(120)
-        val open = !listScrolls || (!listState.canScrollBackward && bar.collapsedFraction < 0.5f)
-        moveBar(if (open) 0f else bar.heightOffsetLimit)
-    }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            // Mouse wheel: one notch would jump the bar closed, and Compose drops wheel-up at the top
-            // of the list (the list can't take it), so it would never reopen. Instead the first notch
-            // that changes the bar plays the same short animation, and the list scrolls after that.
-            // Touch scrolling still moves the bar with the finger (Material's nested scroll).
-            .pointerInput(Unit) {
-                var animating: Job? = null
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent(PointerEventPass.Initial)
-                        if (event.type != PointerEventType.Scroll) continue
-                        val dy = event.changes.first().scrollDelta.y
-                        val listCanScroll = listState.canScrollForward || listState.canScrollBackward
-                        val target = when {
-                            dy > 0f && listCanScroll && bar.collapsedFraction < 1f -> bar.heightOffsetLimit
-                            dy < 0f && !listState.canScrollBackward && bar.heightOffset < 0f -> 0f
-                            else -> continue
-                        }
-                        event.changes.forEach { it.consume() }
-                        if (animating?.isActive != true) {
-                            animating = scope.launch { moveBar(target) }
-                        }
-                    }
-                }
-            },
-    ) {
-        MediumTopAppBar(
+    // A plain one-line bar: a collapsing bar keeps an empty row on top for icons this screen doesn't have.
+    Column(Modifier.fillMaxSize()) {
+        TopAppBar(
             title = {
                 Text(
                     "Antenatal Care",
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.combinedClickable(onClick = {}, onLongClick = { confirmReset = true }),
                 )
             },
             windowInsets = WindowInsets(0), // App() applies the safe-area insets.
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                scrolledContainerColor = MaterialTheme.colorScheme.background,
-            ),
-            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         )
         Column(
             Modifier.weight(1f).padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
@@ -218,8 +149,8 @@ fun PatientListScreen(
                 ),
                 modifier = Modifier.height(48.dp),
             )
-            LazyColumn(Modifier.weight(1f), listState, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { Pill("Offline · saved on this device") }
+            LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                item { Pill("Works offline · saved on this device") }
                 val list = patients.orEmpty()
                 if (patients != null && list.isEmpty()) {
                     item { Text("No patients found", style = MaterialTheme.typography.bodyLarge) }

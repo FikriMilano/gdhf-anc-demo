@@ -32,7 +32,7 @@ Rules:
 ## 3. Screens (four, one job each)
 
 ### Screen 1 — Patient list (home)
-- Title "Antenatal Care" and a small badge: "Offline · saved on this device".
+- Title "Antenatal Care" and a small badge: "Works offline · saved on this device".
 - A persistent **"Demo only — don't enter real patient data"** notice (small, but always visible somewhere in the app).
 - Search bar: find patients by name (Engine search).
 - Filter chip **"High blood pressure"**: patients with a latest reading ≥ 140 systolic or ≥ 90 diastolic (Engine search on Observation values if supported; otherwise filter in shared code and note it).
