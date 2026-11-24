@@ -1,0 +1,33 @@
+# Builds the desktop installers: .msi on Windows, .dmg on a Mac (Apple Silicon). Start it from the
+# Actions tab ("Run workflow"); the installers are attached to the run as downloadable artifacts.
+# Both are unsigned, so Windows SmartScreen and macOS Gatekeeper warn on first launch.
+name: Desktop installers
+
+on: workflow_dispatch
+
+jobs:
+  package:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            task: packageMsi
+          - os: macos-latest
+            task: packageDmg
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :shared:${{ matrix.task }}
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.task }}
+          path: |
+            shared/build/compose/binaries/main/msi/*.msi
+            shared/build/compose/binaries/main/dmg/*.dmg

@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -81,7 +82,29 @@ compose.resources {
 }
 
 compose.desktop {
-  application { mainClass = "dev.ohs.demo.anc.MainKt" }
+  application {
+    mainClass = "dev.ohs.demo.anc.MainKt"
+    // Installers: packageDmg on a Mac, packageMsi on Windows (each OS builds its own; see
+    // .github/workflows/desktop.yml). The Engine keeps its database in ~/.fhir-engine.
+    nativeDistributions {
+      targetFormats(TargetFormat.Dmg, TargetFormat.Msi)
+      packageName = "Antenatal Care"
+      packageVersion = "1.0.0"
+      description = "GDHF 2026 antenatal care demo"
+      vendor = "GDHF ANC Demo"
+      // From suggestRuntimeModules, plus what it can't see: Ktor's Java HTTP client and HTTPS.
+      modules(
+        "java.instrument", "java.management", "jdk.security.auth", "jdk.unsupported",
+        "java.net.http", "jdk.crypto.ec", "java.naming",
+      )
+      macOS { bundleID = "com.fikrimilano.gdhfanc.desktop" }
+      windows {
+        menuGroup = "Antenatal Care"
+        shortcut = true
+        upgradeUuid = "e0ed892a-4bdc-4f14-a884-be2b5e4e9c4a" // fixed, so a new version replaces the old
+      }
+    }
+  }
 }
 
 // The service worker (src/wasmJsMain/resources/sw.js) caches every file listed in precache.json,

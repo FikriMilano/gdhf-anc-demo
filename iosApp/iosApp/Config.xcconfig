@@ -2,7 +2,7 @@ CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
 
 PRODUCT_NAME=Antenatal Care
-PRODUCT_BUNDLE_IDENTIFIER=dev.ohs.demo.anc
+PRODUCT_BUNDLE_IDENTIFIER=com.fikrimilano.gdhfanc
 
 // To run on a real iPhone, copy Local.xcconfig.example to Local.xcconfig and set your team there.
 #include? "Local.xcconfig"
