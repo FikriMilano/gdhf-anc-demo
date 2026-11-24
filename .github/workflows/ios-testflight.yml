@@ -46,6 +46,12 @@ jobs:
       # distribution (cloud-managed certificate, App Store profile), which needs no device.
       # The build number is the run number, so every upload is new.
       - name: Archive
+        env:
+          # The optimised (release) Kotlin/Native link of the shared framework ran out of memory on
+          # the 7 GB runner ("Java heap space" after 35 min). The debug framework links in far less
+          # memory and time; it is what the simulator runs.
+          # ponytail: unoptimised Kotlin code in the app; switch to release on a larger runner.
+          KOTLIN_FRAMEWORK_BUILD_TYPE: debug
         run: |
           xcodebuild -version
           xcodebuild archive \
