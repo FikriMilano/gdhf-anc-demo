@@ -2,6 +2,7 @@ package dev.ohs.demo.anc.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -77,6 +79,8 @@ import dev.ohs.demo.anc.fhir.extractRegistration
 import dev.ohs.demo.anc.fhir.followUps
 import dev.ohs.demo.anc.fhir.highBloodPressureCarePlan
 import dev.ohs.demo.anc.fhir.registrationQuestionnaireJson
+import dev.ohs.demo.anc.resources.Res
+import dev.ohs.demo.anc.resources.ohs_mark
 import dev.ohs.fhir.datacapture.Questionnaire
 import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.model.r4.Observation
@@ -85,6 +89,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.painterResource
 
 private val HighBpRed = Color(0xFFB3261E)
 
@@ -117,6 +122,14 @@ fun PatientListScreen(
     // A plain one-line bar: a collapsing bar keeps an empty row on top for icons this screen doesn't have.
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
+            navigationIcon = {
+                Image(
+                    painterResource(Res.drawable.ohs_mark),
+                    contentDescription = "Open Health Stack",
+                    // Clear space of one square of the mark (OHS brand guidelines) before the title.
+                    modifier = Modifier.padding(start = 16.dp, end = 14.dp).size(32.dp),
+                )
+            },
             title = {
                 Text(
                     "Antenatal Care",

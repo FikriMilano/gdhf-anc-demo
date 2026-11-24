@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Open Health Stack mark, from ohs-sf-website/assets/brand/ohs-mark.svg (geometry and colours unchanged). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path
+        android:fillColor="#FF7262B7"
+        android:pathData="M4.99,1h5.77a3.99,3.99 0,0 1,3.99,3.99v5.77a3.99,3.99 0,0 1,-3.99,3.99h-5.77a3.99,3.99 0,0 1,-3.99,-3.99v-5.77a3.99,3.99 0,0 1,3.99,-3.99z" />
+    <path
+        android:fillColor="#FF0C87A7"
+        android:pathData="M21.24,1h5.77a3.99,3.99 0,0 1,3.99,3.99v5.77a3.99,3.99 0,0 1,-3.99,3.99h-5.77a3.99,3.99 0,0 1,-3.99,-3.99v-5.77a3.99,3.99 0,0 1,3.99,-3.99z" />
+    <path
+        android:fillColor="#FF7666B2"
+        android:pathData="M4.99,17.25h5.77a3.99,3.99 0,0 1,3.99,3.99v5.77a3.99,3.99 0,0 1,-3.99,3.99h-5.77a3.99,3.99 0,0 1,-3.99,-3.99v-5.77a3.99,3.99 0,0 1,3.99,-3.99z" />
+    <path
+        android:fillColor="#FF4F3F83"
+        android:pathData="M21.24,17.25h5.77a3.99,3.99 0,0 1,3.99,3.99v5.77a3.99,3.99 0,0 1,-3.99,3.99h-5.77a3.99,3.99 0,0 1,-3.99,-3.99v-5.77a3.99,3.99 0,0 1,3.99,-3.99z" />
+</vector>

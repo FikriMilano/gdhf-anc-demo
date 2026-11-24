@@ -160,13 +160,24 @@ private fun AncNavigation(repository: AncRepository) {
     }
 }
 
+/** Always visible at the bottom of every screen. */
 @Composable
 private fun DemoOnlyNotice() {
-    Text(
-        "Demo only — don't enter real patient data",
-        modifier = Modifier.fillMaxWidth().background(Lavender).padding(horizontal = 16.dp, vertical = 6.dp),
-        style = MaterialTheme.typography.labelLarge,
-        color = Purple,
-        textAlign = TextAlign.Center,
-    )
+    Column(
+        Modifier.fillMaxWidth().background(Lavender).padding(horizontal = 16.dp, vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            "Demo only — don't enter real patient data",
+            style = MaterialTheme.typography.labelLarge,
+            color = Purple,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            "Built with Open Health Stack",
+            style = MaterialTheme.typography.labelMedium,
+            color = Teal,
+            textAlign = TextAlign.Center,
+        )
+    }
 }
