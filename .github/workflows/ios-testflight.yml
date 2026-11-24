@@ -26,10 +26,20 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
 
+      # Rebuilds the PEM from the secret, whatever happened to its line breaks when it was pasted
+      # (one line, CRLF, literal "\n"), then checks it is a valid key. Never prints the key.
       - name: API key file
         env:
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
-        run: printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc-key.p8"
+        run: |
+          body=$(printf '%s' "$ASC_KEY_P8" | sed -e 's/\\n/\n/g' -e 's/-----[A-Z ]*-----//g' | tr -d ' \t\r\n')
+          { echo "-----BEGIN PRIVATE KEY-----"; echo "$body" | fold -w 64; echo "-----END PRIVATE KEY-----"; } \
+            > "$RUNNER_TEMP/asc-key.p8"
+          if ! openssl pkey -in "$RUNNER_TEMP/asc-key.p8" -noout 2>/dev/null; then
+            echo "::error::ASC_KEY_P8 is not a valid private key (${#body} base64 characters after cleanup;"\
+              "a .p8 key has about 184). Paste the whole AuthKey_XXXX.p8 file into the secret again."
+            exit 1
+          fi
 
       # Xcode signs automatically with the API key (cloud-managed certificate); the build number is
       # the run number, so every upload is new.
