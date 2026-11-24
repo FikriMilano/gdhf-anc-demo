@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -55,8 +56,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -301,6 +304,11 @@ fun RegistrationScreen(repository: AncRepository, onSaved: (Registration) -> Uni
 fun SavedScreen(registration: Registration, doneLabel: String = "Back to patient list", onBackToList: () -> Unit) {
     var showFhir by remember { mutableStateOf(false) }
     val fhirJson = remember(registration) { registration.toPrettyJson() }
+    var copied by remember(registration) { mutableStateOf(false) }
+    // The older ClipboardManager, deprecated for Clipboard, because its setText(text) works the same on
+    // all four platforms; Clipboard needs a ClipEntry that each platform builds differently.
+    @Suppress("DEPRECATION")
+    val clipboard = LocalClipboardManager.current
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text("Saved", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
@@ -318,6 +326,16 @@ fun SavedScreen(registration: Registration, doneLabel: String = "Back to patient
         CarePlanCard(registration.patient, registration.resources.filterIsInstance<Observation>())
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("View FHIR", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            if (showFhir) {
+                OutlinedButton(
+                    onClick = {
+                        clipboard.setText(AnnotatedString(fhirJson))
+                        copied = true
+                    },
+                    modifier = Modifier.height(48.dp),
+                ) { Text(if (copied) "Copied" else "Copy", style = MaterialTheme.typography.titleMedium) }
+                Spacer(Modifier.width(12.dp))
+            }
             Switch(checked = showFhir, onCheckedChange = { showFhir = it })
         }
         if (showFhir) {
