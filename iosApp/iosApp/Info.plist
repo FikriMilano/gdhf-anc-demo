@@ -46,5 +46,10 @@
 	<!-- Only standard HTTPS, so TestFlight uploads don't stop at the export-compliance question. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- Required by App Store Connect (ITMS-90683): Data Capture depends on the Compass location
+	     library, so the app contains location code. This form has no location question, so the
+	     app never asks for location. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Some forms can record where a visit took place. This demo's form does not use your location.</string>
 </dict>
 </plist>
