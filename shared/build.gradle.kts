@@ -1,3 +1,4 @@
+import java.util.zip.ZipFile
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
@@ -81,9 +82,41 @@ compose.resources {
   publicResClass = true
 }
 
+// Android's R8 reads the shrinker rules libraries ship in META-INF/proguard; the desktop ProGuard
+// doesn't. Without them it removed code Room loads by name (ResourceDatabase_Impl), so collect them.
+val collectLibraryProguardRules = tasks.register("collectLibraryProguardRules") {
+  val jars: FileCollection = configurations.getByName("jvmRuntimeClasspath")
+  val out = layout.buildDirectory.file("library-proguard-rules.pro")
+  inputs.files(jars)
+  outputs.file(out)
+  doLast {
+    val rules = StringBuilder()
+    for (jar in jars.files.filter { it.name.endsWith(".jar") }) {
+      val zip = ZipFile(jar)
+      for (entry in zip.entries().toList()) {
+        if (entry.name.startsWith("META-INF/proguard/") && entry.name.endsWith(".pro")) {
+          rules.append("# ${jar.name}: ${entry.name}\n")
+          rules.append(zip.getInputStream(entry).bufferedReader().readText()).append("\n")
+        }
+      }
+      zip.close()
+    }
+    out.get().asFile.writeText(rules.toString())
+  }
+}
+
 compose.desktop {
   application {
     mainClass = "dev.ohs.demo.anc.MainKt"
+    // Release installers (packageReleaseDmg/Msi) run ProGuard to drop unused code. Class names
+    // are kept (no obfuscation), since the OHS libraries look FHIR types up by class name.
+    buildTypes.release.proguard {
+      isEnabled.set(true)
+      // ProGuard's optimiser wrote invalid bytecode for PatientListScreen (VerifyError:
+      // inconsistent stackmap frames); removing unused code alone is safe.
+      optimize.set(false)
+      configurationFiles.from(project.file("desktop-rules.pro"), collectLibraryProguardRules)
+    }
     // Installers: packageDmg on a Mac, packageMsi on Windows (each OS builds its own; see
     // .github/workflows/desktop.yml). The Engine keeps its database in ~/.fhir-engine.
     nativeDistributions {

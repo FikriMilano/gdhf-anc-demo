@@ -1,21 +1,7 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# The OHS libraries map FHIR model classes to FHIR names by class name, e.g. Engine's
+# getResourceType() does ResourceType.valueOf(Patient::class.simpleName), workflow's
+# resourceTypeName(), and Data Capture's answer validator compares names like "Boolean" for
+# QuestionnaireResponse.Item.Answer.Value.Boolean. So R4 model class names (nested ones too) must
+# survive R8. Unused classes are still removed; only the names of the kept ones stay.
+-keepnames class dev.ohs.fhir.model.r4.** { *; }
+-keepattributes InnerClasses,EnclosingMethod
