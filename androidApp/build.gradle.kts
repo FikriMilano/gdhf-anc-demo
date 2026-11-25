@@ -24,6 +24,9 @@ android {
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
+    // Phones only: 64-bit ARM (nearly every phone since ~2017) and 32-bit ARM (older ones).
+    // Leaves out the x86 copies of the native libraries; the APK no longer runs on x86 emulators.
+    ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
   }
   signingConfigs {
     if (keystore != null) create("release") {
@@ -33,7 +36,15 @@ android {
       keyPassword = keystore.getProperty("keyPassword")
     }
   }
-  buildTypes { release { signingConfig = signingConfigs.findByName("release") } }
+  buildTypes {
+    release {
+      signingConfig = signingConfigs.findByName("release")
+      // R8 removes the code the app never calls (most of the FHIR model, unused library parts).
+      isMinifyEnabled = true
+      isShrinkResources = true
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+  }
   buildFeatures { compose = true }
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 }
