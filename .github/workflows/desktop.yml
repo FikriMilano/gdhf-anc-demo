@@ -1,6 +1,7 @@
 # Builds the desktop installers: .msi on Windows, .dmg on a Mac (Apple Silicon). Start it from the
 # Actions tab ("Run workflow"); the installers are attached to the run as downloadable artifacts.
 # Both are unsigned, so Windows SmartScreen and macOS Gatekeeper warn on first launch.
+# Release builds: ProGuard removes unused code first (rules in shared/desktop-rules.pro).
 name: Desktop installers
 
 on: workflow_dispatch
@@ -11,9 +12,9 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            task: packageMsi
+            task: packageReleaseMsi
           - os: macos-latest
-            task: packageDmg
+            task: packageReleaseDmg
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     steps:
@@ -29,5 +30,5 @@ jobs:
         with:
           name: ${{ matrix.task }}
           path: |
-            shared/build/compose/binaries/main/msi/*.msi
-            shared/build/compose/binaries/main/dmg/*.dmg
+            shared/build/compose/binaries/main-release/msi/*.msi
+            shared/build/compose/binaries/main-release/dmg/*.dmg
